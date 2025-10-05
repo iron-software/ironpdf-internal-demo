@@ -1,0 +1,16 @@
+
+# Build outputs
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+
+# System files
+Thumbs.db
+Desktop.ini
+
+# Do NOT ignore CSV files
+# *.csv
