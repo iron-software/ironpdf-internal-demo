@@ -15,16 +15,25 @@ namespace TicketBatchGenerator
         static async Task Main(string[] args)
         {
             // Initialize IronPDF license if needed
+            IronPdf.License.LicenseKey = "";
 
 
             // Path to your CSV file
             string csvFilePath = "flight_records.csv";
+            string templateFilePath = "TicketTemplate.html";
             string outputDirectory = "OutputTickets";
 
             // Verify CSV file exists
             if (!File.Exists(csvFilePath))
             {
                 Console.WriteLine($"Error: CSV file not found at {csvFilePath}");
+                return;
+            }
+
+            // Verify template file exists
+            if (!File.Exists(templateFilePath))
+            {
+                Console.WriteLine($"Error: Template file not found at {templateFilePath}");
                 return;
             }
 
@@ -39,7 +48,7 @@ namespace TicketBatchGenerator
                 Console.WriteLine($"Loaded {passengers.Count} passenger records from {csvFilePath}");
 
                 // Step 2: Generate tickets
-                var generator = new TicketGenerator();
+                var generator = new TicketGenerator(templateFilePath);
                 await generator.GenerateTicketsInBulk(passengers, outputDirectory);
 
                 stopwatch.Stop();
@@ -57,10 +66,24 @@ namespace TicketBatchGenerator
         }
     }
 
+    public static class ValidationHelper
+    {
+        public static bool AllPropertiesHaveValues(params string[] values)
+        {
+            return values.All(value => !string.IsNullOrWhiteSpace(value));
+        }
+
+        public static bool AnyPropertyMissing(params string[] values)
+        {
+            return values.Any(value => string.IsNullOrWhiteSpace(value));
+        }
+    }
+
     public class TicketGenerator
     {
         private int _processedCount = 0;
         private readonly object _lockObject = new object();
+        private readonly string _htmlTemplate;
 
         private static readonly ThreadLocal<ChromePdfRenderer> _renderer = new ThreadLocal<ChromePdfRenderer>(() =>
         {
@@ -70,8 +93,12 @@ namespace TicketBatchGenerator
             return renderer;
         });
 
-        public TicketGenerator()
+        public TicketGenerator(string templateFilePath)
         {
+            // Load HTML template from file
+            _htmlTemplate = File.ReadAllText(templateFilePath);
+            Console.WriteLine($"Loaded HTML template from {templateFilePath}");
+
             // Pre-warm the renderer
             _ = _renderer.Value;
         }
@@ -115,9 +142,13 @@ namespace TicketBatchGenerator
         {
             try
             {
-                if (!passenger.IsValid()) return;
+                if (!passenger.IsValid())
+                {
+                    Console.WriteLine($"Skipping invalid passenger data for {passenger.PassengerName ?? "(unknown)"}");
+                    return;
+                }
 
-                string html = HtmlTemplate
+                string html = _htmlTemplate
                     .Replace("{{PassengerName}}", EscapeHtml(passenger.PassengerName))
                     .Replace("{{FlightNumber}}", EscapeHtml(passenger.FlightNumber))
                     .Replace("{{DepartureAirport}}", EscapeHtml(passenger.DepartureAirport))
@@ -158,71 +189,6 @@ namespace TicketBatchGenerator
                 .Replace(">", "&gt;")
                 .Replace("\"", "&quot;")
                 .Replace("'", "&#39;") ?? string.Empty;
-
-        // Minimal, printable ticket layout.
-        private const string HtmlTemplate = @"
-<!doctype html>
-<html>
-<head>
-<meta charset=""utf-8"">
-<title>Boarding Pass</title>
-<style>
-  body { font-family: Arial, Helvetica, sans-serif; margin: 24px; }
-  .ticket { border: 2px solid #222; border-radius: 12px; padding: 20px; }
-  .header { display:flex; justify-content:space-between; align-items:center; }
-  .brand { font-weight: 700; font-size: 20px; letter-spacing: 1px; }
-  .info { margin-top:16px; display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .cell { border:1px solid #ccc; border-radius:8px; padding:10px; }
-  .label { color:#555; font-size:12px; text-transform:uppercase; }
-  .value { font-size:16px; font-weight:600; margin-top:4px; }
-  .barcode { margin-top:18px; padding:12px; border:1px dashed #666; text-align:center; border-radius:8px; font-family: 'Consolas', monospace; }
-  .footer { margin-top:14px; font-size:11px; color:#666; }
-</style>
-</head>
-<body>
-  <div class=""ticket"">
-    <div class=""header"">
-      <div class=""brand"">EL Airways • Boarding Pass</div>
-      <div class=""brand"">{{FlightNumber}}</div>
-    </div>
-
-    <div class=""info"">
-      <div class=""cell"">
-        <div class=""label"">Passenger</div>
-        <div class=""value"">{{PassengerName}}</div>
-      </div>
-      <div class=""cell"">
-        <div class=""label"">Cabin / Seat</div>
-        <div class=""value"">{{CabinClass}} • {{SeatNumber}}</div>
-      </div>
-      <div class=""cell"">
-        <div class=""label"">From</div>
-        <div class=""value"">{{DepartureAirport}}</div>
-      </div>
-      <div class=""cell"">
-        <div class=""label"">To</div>
-        <div class=""value"">{{ArrivalAirport}}</div>
-      </div>
-      <div class=""cell"">
-        <div class=""label"">Flight Date</div>
-        <div class=""value"">{{FlightDate}}</div>
-      </div>
-      <div class=""cell"">
-        <div class=""label"">Departure Time</div>
-        <div class=""value"">{{DepartureTime}}</div>
-      </div>
-    </div>
-
-    <div class=""barcode"">
-      {{BarcodeData}}
-    </div>
-
-    <div class=""footer"">
-      Generated: {{GenerationTime}} — Non-transferable. Please arrive at the gate at least 30 minutes before departure.
-    </div>
-  </div>
-</body>
-</html>";
     }
 
     public class CsvDataReader
@@ -323,15 +289,10 @@ namespace TicketBatchGenerator
 
         public bool IsValid()
         {
-            return !string.IsNullOrWhiteSpace(PassengerName) &&
-                   !string.IsNullOrWhiteSpace(FlightNumber) &&
-                   !string.IsNullOrWhiteSpace(DepartureAirport) &&
-                   !string.IsNullOrWhiteSpace(ArrivalAirport) &&
-                   !string.IsNullOrWhiteSpace(FlightDate) &&
-                   !string.IsNullOrWhiteSpace(DepartureTime) &&
-                   !string.IsNullOrWhiteSpace(CabinClass) &&
-                   !string.IsNullOrWhiteSpace(SeatNumber) &&
-                   !string.IsNullOrWhiteSpace(BarcodeData);
+            return ValidationHelper.AllPropertiesHaveValues(
+                PassengerName, FlightNumber, DepartureAirport, ArrivalAirport,
+                FlightDate, DepartureTime, CabinClass, SeatNumber, BarcodeData
+            );
         }
     }
 }

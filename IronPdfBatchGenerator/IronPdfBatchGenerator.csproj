@@ -8,6 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="flight_records.csv" />
+    <None Remove="TicketTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="flight_records.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TicketTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="IronPdf" Version="2025.9.4" />
   </ItemGroup>
 
