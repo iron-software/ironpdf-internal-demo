@@ -4,6 +4,5 @@
     {
         public string Name { get; set; } = string.Empty;
         public string TemplatePath { get; set; } = string.Empty;
-        public string DataPath { get; set; } = string.Empty;
     }
 }

@@ -1,6 +1,5 @@
-﻿using IronPdf;
-using System;
-using System.Linq;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using PdfGeneratorDemo.Configuration;
 using PdfGeneratorDemo.Controllers;
@@ -8,25 +7,26 @@ using PdfGeneratorDemo.Models;
 
 namespace PdfGeneratorDemo
 {
-    class Program
+    public class Program
     {
         static async Task Main(string[] args)
         {
-            IronPdf.License.LicenseKey = ""; 
+            IronPdf.License.LicenseKey = ""; // PLACE KEY STRING
 
             try
             {
+                var baseDir = AppContext.BaseDirectory;
+                var projectRoot = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\"));
+
                 var config = new GeneratorConfiguration
                 {
-                    TemplatesFolder = "Templates",
-                    DataFolder = "Data",
-                    OutputBaseFolder = "Output",
-                    MaxDegreeOfParallelism = Environment.ProcessorCount,
-                    ShowProgressInterval = 20
+                    TemplatesFolder = Path.Combine(projectRoot, "Templates"),
+                    OutputFolder = Path.Combine(projectRoot, "Output")
                 };
 
                 var controller = new DocumentGenerationController(config);
                 var result = await controller.ExecuteAsync();
+
                 DisplaySummary(result);
             }
             catch (Exception ex)
@@ -38,24 +38,13 @@ namespace PdfGeneratorDemo
 
         static void DisplaySummary(GenerationResult result)
         {
-            Console.WriteLine($"\n{'='}{new string('=', 70)}");
-            Console.WriteLine("GENERATION SUMMARY");
-            Console.WriteLine($"{'='}{new string('=', 70)}");
-            Console.WriteLine($"Total Templates Processed: {result.TemplateResults.Count}");
-            Console.WriteLine($"Total Documents Generated: {result.TotalDocumentsGenerated}");
-            Console.WriteLine($"Total Duration: {result.TotalDuration:hh\\:mm\\:ss}");
-            Console.WriteLine($"Success Rate: {result.SuccessRate:P1}");
-
-            if (result.TemplateResults.Any(r => !r.Success))
-            {
-                Console.WriteLine("\nFailed Templates:");
-                foreach (var failed in result.TemplateResults.Where(r => !r.Success))
-                {
-                    Console.WriteLine($"  - {failed.TemplateName}: {failed.ErrorMessage}");
-                }
-            }
-
-            Console.WriteLine($"{'='}{new string('=', 70)}\n");
+            Console.WriteLine("\n==============================");
+            Console.WriteLine("PDF GENERATION SUMMARY");
+            Console.WriteLine("==============================");
+            Console.WriteLine($"Templates Processed: {result.TemplateResults.Count}");
+            Console.WriteLine($"Success: {result.TemplateResults.FindAll(r => r.Success).Count}");
+            Console.WriteLine($"Errors: {result.TemplateResults.FindAll(r => !r.Success).Count}");
+            Console.WriteLine($"Total Duration: {result.TotalDuration:mm\\:ss}");
         }
     }
 }

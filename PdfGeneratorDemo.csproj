@@ -8,23 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Data\BoardingPass.csv" />
-    <None Remove="Data\TicketTemplate.csv" />
-    <None Remove="Templates\BoardingPass.html" />
-    <None Remove="Templates\TicketTemplate.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Data\BoardingPass.csv">
+    <Content Include="Templates\Example1.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\TicketTemplate.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\BoardingPass.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\TicketTemplate.html">
+    <Content Include="Templates\Example2.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
