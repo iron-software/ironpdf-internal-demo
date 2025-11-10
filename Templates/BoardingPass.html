@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Boarding Pass</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .card {
+            max-width: 750px;
+            background: #fff;
+            margin: 40px auto;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #0061ff, #60efff);
+            color: white;
+            padding: 20px 30px;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: 26px;
+                letter-spacing: 1px;
+            }
+
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            font-size: 16px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .value {
+            color: #555;
+        }
+
+        .divider {
+            border-top: 2px dashed #ccc;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #f0f0f0;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <h1>BOARDING PASS</h1>
+        </div>
+        <div class="content">
+            <div class="label">Passenger Name:</div><div class="value">{{PassengerName}}</div>
+            <div class="label">Flight Number:</div><div class="value">{{FlightNumber}}</div>
+            <div class="label">Gate:</div><div class="value">{{Gate}}</div>
+            <div class="label">Boarding Time:</div><div class="value">{{BoardingTime}}</div>
+            <div class="label">Seat:</div><div class="value">{{SeatNumber}}</div>
+            <div class="label">Zone:</div><div class="value">{{Zone}}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="footer">
+            Generated at {{GenerationTime}}
+        </div>
+    </div>
+</body>
+</html>

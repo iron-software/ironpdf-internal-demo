@@ -1,0 +1,11 @@
+PassengerName,FlightNumber,Gate,BoardingTime,SeatNumber,Zone
+John Doe,AA123,B12,07:45,12A,3
+Jane Smith,BA456,A6,10:20,2C,1
+Alex Johnson,DL789,C8,13:00,18B,2
+Maria Lopez,UA345,D9,09:10,1A,1
+Robert Kim,AF567,E4,18:45,4D,2
+Laura Chen,CX908,F7,20:30,22F,3
+David Brown,QF123,G5,15:00,10A,2
+Emma Wilson,IB890,H2,12:10,14C,3
+Liam Davis,EK432,I9,07:30,1B,1
+Sophia Green,LH987,J3,09:00,3A,2
