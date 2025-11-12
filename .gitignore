@@ -1,0 +1,8 @@
+bin/
+obj/
+Output/
+*.pdf
+.vscode/
+.idea/
+*.vs/
+
