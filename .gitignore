@@ -22,7 +22,7 @@
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
+# Shared objects (including Windows DLLs)
 *.dll
 *.so
 *.so.*
@@ -51,5 +51,16 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
+# Debug information files
 *.dwo
+
+# .NET / Visual Studio build folders
+bin/
+obj/
+Output/
+*.pdf
+
+# IDE configuration
+.vscode/
+.idea/
+.vs/
