@@ -64,3 +64,6 @@ Output/
 .vscode/
 .idea/
 .vs/
+
+wwwroot/lib/
+
