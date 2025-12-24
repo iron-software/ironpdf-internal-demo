@@ -1,183 +1,266 @@
-# 🧾 PDF Generator Demo
+# IronPdfConverter
 
-## 📘 Overview
-A **C# console application** that generates PDF documents from HTML templates using **IronPDF**.  
-The application provides a **menu-driven interface** to select templates, configure rendering options, and generate PDFs with different input types:
-- Plain HTML
-- HTML with CSS
-- HTML with JavaScript
+A **cloud-ready PDF conversion platform** built with **ASP.NET Core**, **Razor Pages**, and **IronPDF**.
+
+This project provides a **stream-based, production-safe API and UI** for converting multiple input formats into PDFs, merging documents, redacting sensitive text, and compressing files — without relying on shared file paths between client and server.
 
 ---
 
-## 📁 Project Structure
+## ✨ Features
 
-```text
-PdfGeneratorDemo/
-├── Configuration/
-│   └── GeneratorConfiguration.cs
+- HTML → PDF  
+- URL → PDF  
+- Image → PDF (PNG, JPG, JPEG, GIF, BMP)  
+- DOCX → PDF  
+- Batch file conversion (partial-success safe)  
+- Merge multiple PDFs  
+- PDF text redaction  
+- PDF compression (structural)  
+- Stream / byte-based APIs (cloud-native)  
+- Razor Pages UI + REST API  
+- Clean architecture (SOLID)  
+- IronPDF license-aware initialization  
+
+---
+
+## 🏗 Architecture Overview
+
+The project follows a **layered, production-oriented architecture**:
+
+```
+IronPdfConverter
 │
-├── Controllers/
-│   └── DocumentGenerationController.cs
-│
-├── Models/
-│   ├── GenerationResult.cs
-│   ├── TemplateConfiguration.cs
-│   ├── TemplateInfo.cs
-│   └── TemplateResult.cs
-│
-├── Output/
-│   └── (Generated PDF files)
-│
-├── Services/
-│   ├── PdfGeneratorService.cs      ← Main IronPDF processing class
-│   ├── TemplateAnalyzer.cs
-│   └── TemplateManager.cs
-│
-├── Templates/
-│   ├── CSS-HTML.html               ← HTML with Complex CSS
-│   ├── JS-CSS.html                 ← HTML with JavaScript & CSS
-│   └── Plain.html                  ← Plain HTML
-│
-├── Utilities/
-│   └── HtmlHelper.cs
-│
-├── appsettings.json                ← Configuration & License Key
-└── Program.cs                      ← Main entry point
+├── Controllers        # REST API endpoints
+├── Pages              # Razor Pages UI
+├── Services
+│   ├── Interfaces     # Stream/byte-based abstractions
+│   └── Implementations
+├── Models             # Request/response DTOs
+├── wwwroot            # Static assets
+├── Output             # Generated PDFs (runtime)
+│   └── temp           # Internal temp files (DOCX handling)
+└── Program.cs
+```
 
-🧩 Key Components
-Main Entry Point
+### Key Design Principles
 
-Program.cs — The main console entry point with a user-friendly menu interface.
+- No file paths exposed in public APIs  
+- All conversions use `Stream` / `byte[]`  
+- File system is an internal concern only  
+- Partial-success batch processing  
+- Unified rendering pipeline via `ChromePdfRenderer`  
 
-Template selection (Plain HTML, CSS HTML, JS HTML, or All)
+---
 
-Input type configuration
+## 🔌 Technology Stack
 
-Paper orientation settings
+- .NET 8 / ASP.NET Core  
+- Razor Pages  
+- IronPDF  
+- Bootstrap 5  
+- C# (async APIs)  
 
-License key management via appsettings.json
+---
 
-Core IronPDF Processing Class
+## 🔐 IronPDF Licensing
 
-Services/PdfGeneratorService.cs — The main class that handles the IronPDF rendering process.
+Set your IronPDF license key in `appsettings.json`:
 
-Manages PDF generation from HTML content using ChromePdfRenderer
-
-Configures rendering options (JavaScript execution, CSS media types, paper orientation)
-
-Implements error handling to continue processing even if individual PDFs fail
-
-Applies user-selected settings for optimal PDF output
-
-⚙️ Core Features
-Feature	Description
-Template Selection	Process individual templates or all templates at once
-Flexible Rendering	Configure JavaScript execution, CSS media types, and page orientation
-Error Resilience	Continues processing remaining templates even if one PDF fails
-Configuration Management	License key stored securely in appsettings.json
-Multiple Output Options	Support for Portrait and Landscape orientations
-🧱 Sample Templates
-
-The application includes three sample HTML templates located in /Templates:
-
-Template	Description
-Plain.html	Basic HTML invoice with simple tables
-CSS-HTML.html	Styled company report with complex CSS and gradients
-JS-CSS.html	Interactive dashboard with JavaScript functionality
-🚀 Usage
-1️⃣ Configuration
-
-Add your IronPDF license key to appsettings.json:
-
+```json
 {
   "IronPdf": {
-    "LicenseKey": "YOUR_LICENSE_KEY_HERE"
+    "LicenseKey": "YOUR-LICENSE-KEY"
   }
 }
+```
 
-2️⃣ Running the Application
+The application:
+- Initializes the license on startup
+- Logs license status (`IsLicensed`)
+- Safely falls back if no license is provided
 
-Build and run the application:
+---
 
-dotnet build
+## 🚀 Running the Project
+
+### Prerequisites
+
+- .NET 8 SDK
+- IronPDF license (trial or paid)
+
+### Run locally
+
+```bash
+dotnet restore
 dotnet run
+```
 
+Then open:
 
-You’ll be prompted with menu options such as:
+```
+https://localhost:5001
+```
 
-Select Input Type:
-1. Plain HTML
-2. HTML with CSS
-3. HTML with JavaScript
+---
 
-Select Orientation:
-1. Portrait
-2. Landscape
+## 🌐 API Endpoints
 
+### Convert HTML to PDF
 
-Generated PDFs are automatically saved to the /Output folder.
+```http
+POST /PdfConverter/convert-html
+Content-Type: application/json
+```
 
-3️⃣ Menu Options
-Template Selection
+```json
+{
+  "htmlContent": "<h1>Hello PDF</h1>"
+}
+```
 
-Plain HTML Template (processes Plain.html)
+---
 
-HTML with CSS Template (processes CSS-HTML.html)
+### Convert URL to PDF
 
-HTML with JavaScript Template (processes JS-CSS.html)
+```http
+POST /PdfConverter/convert-url
+Content-Type: application/json
+```
 
-All Templates (processes all .html files in /Templates)
+```json
+{
+  "url": "https://example.com"
+}
+```
 
-Input Type
+---
 
-Plain HTML: Basic rendering without JavaScript
+### Convert Multiple Files (Batch)
 
-HTML with CSS: Enhanced CSS media handling
+```http
+POST /PdfConverter/convert-files
+Content-Type: multipart/form-data
+```
 
-HTML with JavaScript: Enables JavaScript execution for charts or animations
+- Supports mixed file types
+- Unsupported files do **not** stop the batch
+- Each file returns its own result
 
-Paper Orientation
+Example response:
 
-Portrait: Standard vertical layout
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "fileName": "doc1.docx",
+      "success": true,
+      "outputFileName": "doc1_20250101_abc123.pdf"
+    },
+    {
+      "fileName": "file.xyz",
+      "success": false,
+      "error": "File type '.xyz' is not supported."
+    }
+  ]
+}
+```
 
-Landscape: Horizontal layout for wider content
+---
 
-🧰 Requirements
+### Merge PDFs
 
-.NET 6.0 or later
+```http
+POST /PdfConverter/merge-pdfs
+Content-Type: multipart/form-data
+```
 
-IronPDF library
+- Requires at least **2 PDF files**
+- Accepts uploaded streams (no file paths)
 
-Valid IronPDF license key (optional for trial mode)
+---
 
-Install IronPDF via NuGet:
+### Download Generated PDF
 
-dotnet add package IronPdf
+```http
+GET /PdfConverter/download/{fileName}
+```
 
-🧩 Error Handling
+---
 
-Individual PDF failures do not stop the overall process
+## 🧠 Design Decisions
 
-Each error is logged with a clear message
+### Why images are wrapped in HTML
 
-A summary report displays total success and failure counts at the end
+Images are embedded as base64 inside HTML and rendered using `ChromePdfRenderer` to ensure:
 
-📦 Output
+- Consistent margins and DPI
+- Predictable scaling
+- A single rendering pipeline
+- Easier future extension (headers, footers, watermarks)
 
-All generated PDFs are saved in the /Output folder
+This avoids branching logic between different renderers.
 
-Files are automatically named after their source templates
+---
 
-A clear console summary is shown after processing:
+### Why streams instead of file paths
 
-✓ Generated: Plain.pdf
-✓ Generated: CSS-HTML.pdf
-✓ Generated: JS-CSS.pdf
+File paths are unsafe and impractical in distributed systems.
 
-Summary: 3 succeeded, 0 failed.
+Streams allow:
+- Cloud deployments
+- Remote API clients
+- In-memory processing
+- Improved security (no path traversal)
 
-🧠 Summary
+All public services operate on `Stream` or `byte[]`.
 
-PDF Generator Demo demonstrates professional-grade PDF generation using IronPDF,
-featuring modular architecture, configurable rendering, and robust error handling —
-ideal for enterprise-level or automation-based document generation workflows.
+---
+
+### Batch conversion behavior
+
+- Each file is processed independently
+- Failures are isolated per file
+- Results are fully observable
+
+---
+
+## 🧪 Supported Formats
+
+| Format | Supported |
+|------|----------|
+| HTML | Yes |
+| URL | Yes |
+| PNG / JPG / JPEG | Yes |
+| GIF / BMP | Yes |
+| DOCX | Yes |
+| PDF (merge) | Yes |
+| Others | No (reported per file) |
+
+---
+
+## 🛡 Security Notes
+
+- No arbitrary file paths accepted
+- Filename sanitization applied
+- JavaScript disabled during rendering (safe default)
+- Temp files cleaned automatically
+
+---
+
+## 📈 Extensibility Ideas
+
+- Azure Blob Storage / S3 integration
+- Authentication & rate limiting
+- Background job processing
+- PDF/A or PDF/UA compliance
+- Watermarks, headers, and footers
+- Webhook callbacks
+
+---
+
+## 📄 License
+
+This project uses **IronPDF**, which requires a valid license for production use.
+
+See: https://ironpdf.com/licensing/
