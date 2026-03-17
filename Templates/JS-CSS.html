@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+            .header h1 {
+                font-size: 2.2em;
+                margin-bottom: 10px;
+            }
+
+        .controls {
+            background: #2c3e50;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+            .control-btn:hover {
+                background: #2980b9;
+                transform: translateY(-2px);
+            }
+
+            .control-btn.active {
+                background: #e74c3c;
+            }
+
+        .content {
+            padding: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .chart {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 20px;
+            gap: 10px;
+        }
+
+        .bar {
+            background: linear-gradient(to top, #3498db, #2ecc71);
+            width: 60px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.5s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+            .bar:hover {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+
+            .metric-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .metric-change {
+            font-size: 0.9em;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+            .data-table th {
+                background: #34495e;
+                color: white;
+                padding: 15px;
+                text-align: left;
+                cursor: pointer;
+            }
+
+                .data-table th:hover {
+                    background: #2c3e50;
+                }
+
+            .data-table td {
+                padding: 15px;
+                border-bottom: 1px solid #ecf0f1;
+            }
+
+            .data-table tr:nth-child(even) {
+                background: #f8f9fa;
+            }
+
+        .highlight {
+            background: #fff3cd !important;
+        }
+
+        .search-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+            .search-box input {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                font-size: 16px;
+            }
+
+                .search-box input:focus {
+                    border-color: #3498db;
+                    outline: none;
+                }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Interactive Sales Dashboard</h1>
+            <p>Real-time performance metrics and analytics</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn active" onclick="switchView('monthly')">Monthly</button>
+            <button class="control-btn" onclick="switchView('quarterly')">Quarterly</button>
+            <button class="control-btn" onclick="switchView('yearly')">Yearly</button>
+            <button class="control-btn" onclick="refreshData()">Refresh Data</button>
+            <button class="control-btn" onclick="exportReport()">Export Report</button>
+        </div>
+
+        <div class="content">
+            <div class="metrics">
+                <div class="metric-card">
+                    <div>Total Revenue</div>
+                    <div class="metric-value" id="totalRevenue">$0</div>
+                    <div class="metric-change positive" id="revenueChange">+0%</div>
+                </div>
+                <div class="metric-card">
+                    <div>New Customers</div>
+                    <div class="metric-value" id="newCustomers">0</div>
+                    <div class="metric-change positive" id="customerChange">+0%</div>
+                </div>
+                <div class="metric-card">
+                    <div>Conversion Rate</div>
+                    <div class="metric-value" id="conversionRate">0%</div>
+                    <div class="metric-change negative" id="conversionChange">-0%</div>
+                </div>
+                <div class="metric-card">
+                    <div>Avg. Order Value</div>
+                    <div class="metric-value" id="avgOrderValue">$0</div>
+                    <div class="metric-change positive" id="orderValueChange">+0%</div>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search products or categories..." onkeyup="filterTable()">
+            </div>
+
+            <div class="chart-container">
+                <h3>Sales Performance</h3>
+                <div class="chart" id="salesChart">
+                    <!-- Chart bars will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Product Performance</h3>
+                <table class="data-table" id="productTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">Product</th>
+                            <th onclick="sortTable(1)">Category</th>
+                            <th onclick="sortTable(2)">Sales</th>
+                            <th onclick="sortTable(3)">Growth</th>
+                            <th onclick="sortTable(4)">Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Table rows will be generated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const data = {
+            monthly: {
+                revenue: 184500,
+                customers: 1247,
+                conversion: 3.2,
+                avgOrder: 148,
+                chartData: [45, 52, 38, 64, 72, 58, 49, 61, 55, 68, 74, 81],
+                products: [
+                    { name: "Laptop Pro", category: "Electronics", sales: 45000, growth: 12, stock: 45 },
+                    { name: "Wireless Mouse", category: "Accessories", sales: 12000, growth: 8, stock: 120 },
+                    { name: "Mechanical Keyboard", category: "Accessories", sales: 18500, growth: 15, stock: 78 },
+                    { name: "Monitor 27\"", category: "Electronics", sales: 32000, growth: -2, stock: 32 },
+                    { name: "Webcam HD", category: "Accessories", sales: 8900, growth: 25, stock: 156 },
+                    { name: "Gaming Chair", category: "Furniture", sales: 21500, growth: 18, stock: 23 }
+                ]
+            },
+            quarterly: {
+                revenue: 553500,
+                customers: 3741,
+                conversion: 3.1,
+                avgOrder: 152,
+                chartData: [135, 156, 114, 192],
+                products: [
+                    { name: "Laptop Pro", category: "Electronics", sales: 135000, growth: 15, stock: 45 },
+                    { name: "Wireless Mouse", category: "Accessories", sales: 36000, growth: 10, stock: 120 },
+                    { name: "Mechanical Keyboard", category: "Accessories", sales: 55500, growth: 18, stock: 78 },
+                    { name: "Monitor 27\"", category: "Electronics", sales: 96000, growth: 5, stock: 32 },
+                    { name: "Webcam HD", category: "Accessories", sales: 26700, growth: 30, stock: 156 },
+                    { name: "Gaming Chair", category: "Furniture", sales: 64500, growth: 22, stock: 23 }
+                ]
+            },
+            yearly: {
+                revenue: 2214000,
+                customers: 14964,
+                conversion: 3.4,
+                avgOrder: 155,
+                chartData: [184, 205, 192, 218, 231, 245, 228, 263, 251, 272, 285, 296],
+                products: [
+                    { name: "Laptop Pro", category: "Electronics", sales: 540000, growth: 20, stock: 45 },
+                    { name: "Wireless Mouse", category: "Accessories", sales: 144000, growth: 15, stock: 120 },
+                    { name: "Mechanical Keyboard", category: "Accessories", sales: 222000, growth: 25, stock: 78 },
+                    { name: "Monitor 27\"", category: "Electronics", sales: 384000, growth: 12, stock: 32 },
+                    { name: "Webcam HD", category: "Accessories", sales: 106800, growth: 40, stock: 156 },
+                    { name: "Gaming Chair", category: "Furniture", sales: 258000, growth: 35, stock: 23 }
+                ]
+            }
+        };
+
+        let currentView = 'monthly';
+        let currentData = data.monthly;
+
+        function switchView(view) {
+            currentView = view;
+            currentData = data[view];
+
+            // Update active button
+            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            // Update metrics
+            document.getElementById('totalRevenue').textContent = formatCurrency(currentData.revenue);
+            document.getElementById('newCustomers').textContent = currentData.customers.toLocaleString();
+            document.getElementById('conversionRate').textContent = currentData.conversion + '%';
+            document.getElementById('avgOrderValue').textContent = formatCurrency(currentData.avgOrder);
+
+            // Update chart
+            updateChart();
+
+            // Update table
+            updateTable();
+        }
+
+        function updateChart() {
+            const chart = document.getElementById('salesChart');
+            chart.innerHTML = '';
+
+            const maxValue = Math.max(...currentData.chartData);
+            const labels = currentView === 'monthly' ?
+                ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] :
+                currentView === 'quarterly' ? ['Q1', 'Q2', 'Q3', 'Q4'] :
+                ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            currentData.chartData.forEach((value, index) => {
+                const height = (value / maxValue) * 100;
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = height + '%';
+                bar.innerHTML = `
+                    <div class="bar-value">${formatCurrency(value * 1000)}</div>
+                    <div class="bar-label">${labels[index]}</div>
+                `;
+                chart.appendChild(bar);
+            });
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            currentData.products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>${formatCurrency(product.sales)}</td>
+                    <td><span class="${product.growth >= 0 ? 'positive' : 'negative'}">${product.growth >= 0 ? '+' : ''}${product.growth}%</span></td>
+                    <td>${product.stock}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#tableBody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.classList.toggle('highlight', input && text.includes(input));
+                row.style.display = input && !text.includes(input) ? 'none' : '';
+            });
+        }
+
+        function sortTable(columnIndex) {
+            // Simple sorting implementation
+            alert(`Sorting by column ${columnIndex + 1} - This would sort the table in a real implementation`);
+        }
+
+        function refreshData() {
+            // Simulate data refresh
+            document.querySelectorAll('.control-btn')[3].textContent = 'Refreshing...';
+            setTimeout(() => {
+                document.querySelectorAll('.control-btn')[3].textContent = 'Refresh Data';
+                alert('Data refreshed successfully!');
+            }, 1000);
+        }
+
+        function exportReport() {
+            alert('Export functionality would be implemented here!');
+        }
+
+        function formatCurrency(amount) {
+            return '$' + amount.toLocaleString();
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+
+            // Simulate real-time updates
+            setInterval(() => {
+                const randomChange = (Math.random() - 0.5) * 10;
+                document.getElementById('totalRevenue').textContent =
+                    formatCurrency(currentData.revenue * (1 + randomChange/100));
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
