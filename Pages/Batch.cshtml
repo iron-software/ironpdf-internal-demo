@@ -1,0 +1,217 @@
+@page
+@model BatchModel
+@{
+    ViewData["Title"] = "Batch Convert";
+    ViewData["ActivePage"] = "Batch";
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="section-header">Batch PDF Conversion</h5>
+                <p class="text-muted small">Upload multiple files (HTML, PDF, images, DOCX) and convert them all to PDF simultaneously. Real-time progress is streamed via SignalR.</p>
+
+                <form id="batchForm" enctype="multipart/form-data">
+                    <div class="upload-zone mb-3" id="batchZone">
+                        <i class="bi bi-collection" style="font-size:2rem;"></i>
+                        <p class="mt-2">Drop files here or click to select</p>
+                        <p class="text-muted small">Supports: .html, .pdf, .png, .jpg, .docx</p>
+                        <input type="file" name="Files" id="batchInput" multiple accept=".html,.htm,.pdf,.png,.jpg,.jpeg,.docx" class="d-none"/>
+                    </div>
+                    <div id="fileList" class="mb-3" style="display:none;">
+                        <h6 class="text-muted">Selected Files</h6>
+                        <ul id="fileListItems" class="list-group list-group-sm"></ul>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="AddHeaderFooter" value="true" id="batchHF"/>
+                                <label class="form-check-label" for="batchHF">Add header/footer</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="EnableJs" value="true" id="batchJs"/>
+                                <label class="form-check-label" for="batchJs">Enable JavaScript</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">Paper Size</label>
+                            <select name="PaperSize" class="form-select form-select-sm">
+                                <option>A4</option>
+                                <option>Letter</option>
+                                <option>A3</option>
+                                <option>Legal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" id="batchSubmit">
+                        <i class="bi bi-play-circle me-1"></i>Start Batch Convert
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="section-header">Live Progress</h5>
+                <div id="progressArea" style="display:none;">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span id="progressLabel" class="text-muted small">Starting...</span>
+                        <span id="progressPercent" class="text-muted small fw-bold">0%</span>
+                    </div>
+                    <div class="progress mb-3" style="height:10px;">
+                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width:0%"></div>
+                    </div>
+                    <div id="progressStats" class="row g-2 text-center mb-3">
+                        <div class="col-4">
+                            <div class="p-2 bg-light rounded">
+                                <div class="fw-bold fs-5" id="statTotal">0</div>
+                                <div class="text-muted" style="font-size:11px;">Total</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 bg-success bg-opacity-10 rounded">
+                                <div class="fw-bold fs-5 text-success" id="statDone">0</div>
+                                <div class="text-muted" style="font-size:11px;">Done</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 bg-danger bg-opacity-10 rounded">
+                                <div class="fw-bold fs-5 text-danger" id="statFailed">0</div>
+                                <div class="text-muted" style="font-size:11px;">Failed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="progressPlaceholder" class="text-center text-muted py-4">
+                    <i class="bi bi-hourglass" style="font-size:2.5rem; opacity:0.3;"></i>
+                    <p class="mt-2 small">Progress will appear here when batch conversion starts</p>
+                </div>
+                <div id="signalrStatus" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mt-4" id="batchResults" style="display:none;">
+    <div class="card-body">
+        <h5 class="section-header">Results</h5>
+        <div id="batchResultList"></div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+<script>
+initDragDrop('batchZone', 'batchInput', '.pdf');
+
+// Show file list on selection
+document.getElementById('batchInput')?.addEventListener('change', function() {
+    const list = document.getElementById('fileListItems');
+    list.innerHTML = '';
+    Array.from(this.files).forEach((f, i) => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item list-group-item-sm d-flex justify-content-between';
+        li.innerHTML = `<span><i class="bi bi-file-earmark me-1 text-muted"></i>${f.name}</span><span class="text-muted small">${formatBytes(f.size)}</span>`;
+        list.appendChild(li);
+    });
+    document.getElementById('fileList').style.display = this.files.length ? 'block' : 'none';
+});
+
+let hubConnection = null;
+let currentJobId = null;
+
+async function initSignalR() {
+    hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl('/hubs/batch-progress')
+        .withAutomaticReconnect()
+        .build();
+
+    hubConnection.on('progressUpdate', update => {
+        currentJobId = update.jobId;
+        updateBatchProgress(update);
+    });
+
+    try {
+        await hubConnection.start();
+        document.getElementById('signalrStatus').innerHTML = '<small class="text-success"><i class="bi bi-wifi me-1"></i>SignalR connected</small>';
+    } catch(e) {
+        document.getElementById('signalrStatus').innerHTML = '<small class="text-warning"><i class="bi bi-wifi-off me-1"></i>SignalR unavailable — polling fallback</small>';
+    }
+}
+
+function updateBatchProgress(update) {
+    document.getElementById('progressPlaceholder').style.display = 'none';
+    document.getElementById('progressArea').style.display = 'block';
+
+    const pct = update.totalItems > 0 ? Math.round((update.processedItems / update.totalItems) * 100) : 0;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressPercent').textContent = pct + '%';
+    document.getElementById('progressLabel').textContent = update.currentFileName
+        ? `Processing: ${update.currentFileName}`
+        : (update.isComplete ? 'Complete!' : 'Processing...');
+    document.getElementById('statTotal').textContent = update.totalItems;
+    document.getElementById('statDone').textContent = update.successCount;
+    document.getElementById('statFailed').textContent = update.errorCount;
+
+    if (update.isComplete) {
+        document.getElementById('progressBar').classList.remove('progress-bar-animated');
+        document.getElementById('progressBar').classList.add(update.errorCount > 0 ? 'bg-warning' : 'bg-success');
+        document.getElementById('progressLabel').textContent = `Completed: ${update.successCount} succeeded, ${update.errorCount} failed`;
+        showToast(`Batch complete: ${update.successCount}/${update.totalItems} files processed`, update.errorCount > 0 ? 'warning' : 'success');
+
+        if (update.results && update.results.length > 0) {
+            const resultsEl = document.getElementById('batchResults');
+            const listEl = document.getElementById('batchResultList');
+            listEl.innerHTML = update.results.map(r => r.isSuccess
+                ? `<div class="result-card mb-2"><div class="d-flex justify-content-between align-items-center">
+                     <div><div class="filename"><i class="bi bi-file-pdf-fill me-1 text-danger"></i>${r.fileName}</div>
+                     <div class="meta">${formatBytes(r.fileSizeBytes)} · ${r.pageCount} pages · ${r.elapsedMs}ms</div></div>
+                     <a href="${r.downloadUrl}" class="btn btn-success btn-sm" download>Download</a></div></div>`
+                : `<div class="result-card mb-2 border-danger"><div class="d-flex align-items-center gap-2">
+                     <i class="bi bi-x-circle text-danger"></i>
+                     <div><div class="filename">${r.fileName}</div><div class="meta text-danger">${r.error}</div></div></div></div>`
+            ).join('');
+            resultsEl.style.display = 'block';
+        }
+    }
+}
+
+document.getElementById('batchForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const files = document.getElementById('batchInput').files;
+    if (!files.length) { showToast('Please select at least one file', 'error'); return; }
+
+    const btn = document.getElementById('batchSubmit');
+    btn.disabled = true;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Submitting...';
+    document.getElementById('progressArea').style.display = 'none';
+    document.getElementById('progressPlaceholder').style.display = 'block';
+    document.getElementById('batchResults').style.display = 'none';
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressBar').className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+
+    try {
+        const fd = new FormData(e.target);
+        const res = await fetch('/api/conversion/batch', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!res.ok) { showToast(data.error || 'Batch submission failed', 'error'); return; }
+
+        const jobId = data.jobId;
+        if (hubConnection && hubConnection.state === signalR.HubConnectionState.Connected) {
+            await hubConnection.invoke('JoinJob', jobId);
+        }
+        showToast(`Batch job started (${files.length} files)`, 'info');
+    } catch(er) { showToast('Error: ' + er.message, 'error'); }
+    btn.disabled = false;
+    btn.innerHTML = orig;
+});
+
+initSignalR();
+</script>
+}

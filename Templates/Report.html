@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>{{REPORT_TITLE}}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1F2937; background: #F9FAFB; }
+  .header { background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%); color: #fff; padding: 28px 40px; }
+  .header h1 { font-size: 24px; font-weight: 700; }
+  .header .meta { font-size: 12px; opacity: 0.8; margin-top: 6px; display: flex; gap: 24px; }
+  .body { padding: 28px 40px; background: #fff; }
+  .section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #2563EB; border-bottom: 2px solid #DBEAFE; padding-bottom: 8px; margin-bottom: 16px; margin-top: 28px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi-card { background: #EFF6FF; border-left: 4px solid #2563EB; border-radius: 8px; padding: 20px; }
+  .kpi-card .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6B7280; margin-bottom: 6px; }
+  .kpi-card .kpi-value { font-size: 28px; font-weight: 700; color: #1E3A5F; }
+  .kpi-card .kpi-delta { font-size: 12px; margin-top: 4px; }
+  .delta-up { color: #059669; }
+  .delta-down { color: #DC2626; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead tr { background: #1E3A5F; color: #fff; }
+  th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; }
+  td { padding: 10px 14px; border-bottom: 1px solid #F3F4F6; }
+  tbody tr:nth-child(even) { background: #F8FAFC; }
+  tbody tr:hover { background: #EFF6FF; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+  .badge-green { background: #D1FAE5; color: #065F46; }
+  .badge-yellow { background: #FEF3C7; color: #92400E; }
+  .badge-red { background: #FEE2E2; color: #991B1B; }
+  .chart-section { margin-top: 8px; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 10px; font-size: 12px; }
+  .bar-label { width: 120px; color: #374151; }
+  .bar-track { flex: 1; background: #E5E7EB; border-radius: 4px; height: 16px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2563EB, #3B82F6); transition: width 0.3s; }
+  .bar-value { width: 60px; text-align: right; font-weight: 600; color: #1E3A5F; }
+  .footer { background: #F3F4F6; padding: 16px 40px; font-size: 11px; color: #9CA3AF; border-top: 1px solid #E5E7EB; display: flex; justify-content: space-between; }
+  .exec-summary { background: #EFF6FF; border-radius: 8px; padding: 18px 22px; border-left: 4px solid #2563EB; margin-bottom: 4px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>{{REPORT_TITLE}}</h1>
+  <div class="meta">
+    <span>Period: {{PERIOD}}</span>
+    <span>Generated: {{GENERATED_DATE}}</span>
+    <span>Prepared by: Analytics Team</span>
+  </div>
+</div>
+
+<div class="body">
+  <div class="section-title">Executive Summary</div>
+  <div class="exec-summary">
+    This report provides a comprehensive overview of business performance for {{PERIOD}}.
+    Overall revenue grew by 18.4% year-over-year, driven primarily by enterprise accounts and
+    new product launches. Customer acquisition costs decreased by 12% while retention rates
+    improved to 94.2%. The company remains on track to achieve its annual targets.
+  </div>
+
+  <div class="section-title">Key Performance Indicators</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Revenue</div>
+      <div class="kpi-value">{{KPI_REVENUE}}</div>
+      <div class="kpi-delta delta-up">▲ 18.4% vs last period</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Active Customers</div>
+      <div class="kpi-value">{{KPI_CUSTOMERS}}</div>
+      <div class="kpi-delta delta-up">▲ 342 new this period</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">NPS Score</div>
+      <div class="kpi-value">{{KPI_NPS}}</div>
+      <div class="kpi-delta delta-up">▲ +7 pts improvement</div>
+    </div>
+  </div>
+
+  <div class="section-title">Departmental Performance</div>
+  <table>
+    <thead>
+      <tr><th>Department</th><th>Target</th><th>Actual</th><th>Variance</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sales</td><td>$4,200,000</td><td>$4,850,000</td><td>+$650,000</td><td><span class="badge badge-green">On Track</span></td></tr>
+      <tr><td>Marketing</td><td>$1,800,000</td><td>$1,650,000</td><td>-$150,000</td><td><span class="badge badge-yellow">Watch</span></td></tr>
+      <tr><td>Engineering</td><td>$3,100,000</td><td>$2,980,000</td><td>-$120,000</td><td><span class="badge badge-yellow">Watch</span></td></tr>
+      <tr><td>Support</td><td>$900,000</td><td>$845,000</td><td>-$55,000</td><td><span class="badge badge-green">On Track</span></td></tr>
+      <tr><td>Operations</td><td>$2,400,000</td><td>$1,990,000</td><td>-$410,000</td><td><span class="badge badge-red">At Risk</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Regional Revenue Distribution</div>
+  <div class="chart-section">
+    <div class="bar-row"><div class="bar-label">North America</div><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><div class="bar-value">$6.2M</div></div>
+    <div class="bar-row"><div class="bar-label">Europe</div><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div><div class="bar-value">$4.4M</div></div>
+    <div class="bar-row"><div class="bar-label">Asia Pacific</div><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><div class="bar-value">$3.3M</div></div>
+    <div class="bar-row"><div class="bar-label">Latin America</div><div class="bar-track"><div class="bar-fill" style="width:22%"></div></div><div class="bar-value">$1.8M</div></div>
+    <div class="bar-row"><div class="bar-label">Middle East</div><div class="bar-track"><div class="bar-fill" style="width:12%"></div></div><div class="bar-value">$0.9M</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>CONFIDENTIAL — For Internal Use Only</span>
+  <span>IronPDF Demo Report &nbsp;|&nbsp; Page 1 of 1</span>
+  <span>{{GENERATED_DATE}}</span>
+</div>
+</body>
+</html>

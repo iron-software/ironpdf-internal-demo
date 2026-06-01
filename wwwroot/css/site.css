@@ -1,0 +1,316 @@
+:root {
+  --sidebar-width: 240px;
+  --topbar-height: 56px;
+  --brand-color: #4F46E5;
+  --sidebar-bg: #1E293B;
+  --sidebar-text: #CBD5E1;
+  --sidebar-hover: rgba(255,255,255,0.08);
+  --sidebar-active-bg: rgba(99,102,241,0.2);
+  --sidebar-active-text: #818CF8;
+  --sidebar-section-label: #64748B;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Cross-document View Transitions (Chrome/Edge 126+) ── */
+@view-transition { navigation: auto; }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: var(--ease-out-quart);
+}
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+/* Sidebar stays put across navigations to avoid flicker */
+.sidebar { view-transition-name: app-sidebar; }
+.topbar  { view-transition-name: app-topbar;  }
+[data-bs-theme="dark"] {
+  --bs-body-bg: #0F172A;
+  --bs-card-bg: #1E293B;
+  --bs-border-color: #334155;
+}
+
+/* ── Layout ── */
+.app-wrapper { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; height: 100vh;
+  z-index: 1000; overflow-y: auto;
+  transition: transform 0.25s ease;
+}
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.brand-icon {
+  width: 36px; height: 36px; background: var(--brand-color);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff; flex-shrink: 0;
+}
+.brand-name { font-size: 15px; font-weight: 700; color: #F8FAFC; }
+.brand-version { font-size: 10px; color: #64748B; }
+.sidebar-nav { padding: 12px 10px; flex: 1; }
+.nav-section-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--sidebar-section-label); padding: 10px 8px 4px; font-weight: 600;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px; margin-bottom: 2px;
+  color: var(--sidebar-text); text-decoration: none; font-size: 13px; font-weight: 500;
+  transition: all 0.15s;
+}
+.nav-item:hover { background: var(--sidebar-hover); color: #F1F5F9; }
+.nav-item.active { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); font-weight: 600; }
+.nav-item i { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.sidebar-footer {
+  padding: 14px 14px; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-footer-text { font-size: 11px; color: var(--sidebar-text); }
+.theme-toggle-btn {
+  background: rgba(255,255,255,0.08); border: none; color: #94A3B8;
+  width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 16px;
+  transition: all 0.15s;
+}
+.theme-toggle-btn:hover { background: rgba(255,255,255,0.15); color: #F1F5F9; }
+
+/* ── Main Content ── */
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1; display: flex; flex-direction: column; min-height: 100vh;
+}
+.topbar {
+  height: var(--topbar-height); background: var(--bs-body-bg);
+  border-bottom: 1px solid var(--bs-border-color, #E5E7EB);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; position: sticky; top: 0; z-index: 100;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.page-title { font-size: 17px; font-weight: 700; margin: 0; }
+.page-body { padding: 24px; flex: 1; }
+
+/* ── Cards ── */
+.feature-card {
+  border-radius: 14px; border: 1px solid var(--bs-border-color, #E5E7EB);
+  padding: 20px; transition: all 0.2s; cursor: pointer; text-decoration: none;
+  display: block; color: inherit;
+}
+.feature-card:hover { box-shadow: 0 4px 20px rgba(79,70,229,0.12); transform: translateY(-2px); border-color: var(--brand-color); }
+.feature-card .icon {
+  width: 44px; height: 44px; border-radius: 10px; background: #EEF2FF;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 12px; color: var(--brand-color);
+}
+.feature-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.feature-card p { font-size: 12px; color: #6B7280; margin: 0; line-height: 1.5; }
+
+/* ── Upload zones ── */
+.upload-zone {
+  border: 2px dashed #D1D5DB; border-radius: 12px; padding: 28px;
+  text-align: center; transition: all 0.2s; cursor: pointer;
+}
+.upload-zone.dragover { border-color: var(--brand-color); background: #EEF2FF; }
+.upload-zone i { font-size: 36px; color: #9CA3AF; display: block; margin-bottom: 8px; }
+.upload-zone p { font-size: 13px; color: #6B7280; margin: 0; }
+
+/* ── Result card ── */
+.result-card {
+  background: #D1FAE5; border: 1px solid #6EE7B7; border-radius: 12px;
+  padding: 16px 20px; margin-top: 16px;
+}
+.result-card .filename { font-weight: 700; font-size: 14px; color: #065F46; }
+.result-card .meta { font-size: 12px; color: #374151; margin-top: 4px; }
+[data-bs-theme="dark"] .result-card { background: rgba(110,231,183,0.1); border-color: #064E3B; }
+[data-bs-theme="dark"] .result-card .filename { color: #6EE7B7; }
+
+/* ── Progress bar ── */
+.batch-progress-wrap { margin-top: 16px; display: none; }
+.batch-progress-wrap.visible { display: block; }
+
+/* ── Sidebar overlay/toggle for mobile ── */
+.sidebar-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none;
+}
+.sidebar-overlay.show { display: block; }
+.sidebar-toggle { background: none; border: none; font-size: 22px; padding: 4px 8px; }
+
+@media (max-width: 991px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.show { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+}
+
+/* ── Misc ── */
+.badge-feature { background: #EEF2FF; color: #4F46E5; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; }
+.section-header { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--brand-color); border-bottom: 2px solid #EEF2FF; padding-bottom: 8px; margin-bottom: 16px; }
+
+/* ── Page entrance animation ── */
+.page-body {
+  animation: page-enter 320ms var(--ease-out-quart) both;
+}
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Top navigation progress bar ── */
+.nav-progress {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0;
+  background: linear-gradient(90deg, var(--brand-color), #818CF8);
+  box-shadow: 0 0 8px rgba(99,102,241,0.5);
+  z-index: 2000; pointer-events: none;
+  opacity: 0;
+  transition: width 220ms var(--ease-out-quart), opacity 180ms ease;
+}
+.nav-progress.active {
+  opacity: 1;
+}
+.nav-progress.done {
+  width: 100% !important;
+  opacity: 0;
+  transition: width 160ms ease, opacity 280ms ease 120ms;
+}
+
+/* ── Bootstrap tab fade polish ──
+   Bootstrap toggles `.show` on the active pane when `.fade` is present.
+   We override the default opacity-only fade with a subtle lift+fade. */
+.tab-content > .tab-pane.fade {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 220ms var(--ease-out-quart),
+              transform 260ms var(--ease-out-quart);
+}
+.tab-content > .tab-pane.fade.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Tabs themselves: smoother underline + hover */
+.nav-tabs .nav-link {
+  transition: color 180ms ease, border-color 220ms var(--ease-out-quart), background 180ms ease;
+  border-radius: 8px 8px 0 0;
+}
+.nav-tabs .nav-link:hover { background: rgba(99,102,241,0.06); }
+.nav-tabs .nav-link.active { color: var(--brand-color); font-weight: 600; }
+
+/* ── Sidebar nav-item: lift on hover so click feels responsive ── */
+.nav-item {
+  position: relative;
+}
+.nav-item::before {
+  content: ""; position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 3px; border-radius: 0 3px 3px 0; background: var(--sidebar-active-text);
+  transform: scaleY(0); transform-origin: center;
+  transition: transform 220ms var(--ease-out-expo);
+}
+.nav-item.active::before { transform: scaleY(1); }
+.nav-item:active { transform: translateX(1px); }
+
+/* ── Feature/template card stagger entrance ── */
+.feature-card,
+.row.g-4 > [class*="col-"] > .card {
+  animation: card-enter 380ms var(--ease-out-quart) both;
+}
+.row.g-4 > [class*="col-"]:nth-child(1) > .card { animation-delay: 30ms; }
+.row.g-4 > [class*="col-"]:nth-child(2) > .card { animation-delay: 70ms; }
+.row.g-4 > [class*="col-"]:nth-child(3) > .card { animation-delay: 110ms; }
+.row.g-4 > [class*="col-"]:nth-child(4) > .card { animation-delay: 150ms; }
+.row.g-4 > [class*="col-"]:nth-child(5) > .card { animation-delay: 190ms; }
+.row.g-4 > [class*="col-"]:nth-child(6) > .card { animation-delay: 230ms; }
+.row.g-4 > [class*="col-"]:nth-child(7) > .card { animation-delay: 270ms; }
+.row.g-4 > [class*="col-"]:nth-child(n+8) > .card { animation-delay: 310ms; }
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Card hover lift (applies to template cards too) */
+.row.g-4 > [class*="col-"] > .card {
+  transition: transform 220ms var(--ease-out-quart),
+              box-shadow 220ms var(--ease-out-quart),
+              border-color 220ms ease;
+}
+.row.g-4 > [class*="col-"] > .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(79,70,229,0.14) !important;
+}
+
+/* ── Result card reveal ── */
+.result-card {
+  animation: result-pop 360ms var(--ease-out-expo) both;
+}
+@keyframes result-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Template preview modal: skeleton + image fade-in ── */
+.preview-skeleton {
+  padding: 32px 8px;
+  display: flex; flex-direction: column; align-items: center;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+.preview-image {
+  opacity: 0;
+  transform: scale(0.985);
+  transition: opacity 300ms ease, transform 360ms var(--ease-out-quart);
+}
+.preview-image.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Template result reveal (used by .template-result containers) ── */
+.template-result {
+  overflow: hidden;
+}
+
+/* ── Modal smoother entrance ── */
+.modal.fade .modal-dialog {
+  transition: transform 260ms var(--ease-out-quart), opacity 220ms ease;
+  transform: translateY(-12px) scale(0.985);
+  opacity: 0;
+}
+.modal.show .modal-dialog {
+  transform: none;
+  opacity: 1;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .page-body,
+  .feature-card,
+  .row.g-4 > [class*="col-"] > .card,
+  .result-card,
+  .tab-content > .tab-pane.fade,
+  .modal.fade .modal-dialog {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}

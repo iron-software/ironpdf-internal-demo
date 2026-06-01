@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>{{FULL_NAME}} — Resume</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #1F2937; display: flex; min-height: 297mm; }
+  .sidebar { width: 220px; background: #1E3A5F; color: #fff; padding: 28px 20px; flex-shrink: 0; }
+  .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #2563EB); border: 3px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: #fff; margin: 0 auto 14px; }
+  .sidebar-name { text-align: center; font-size: 15px; font-weight: 700; }
+  .sidebar-title { text-align: center; font-size: 11px; color: #93C5FD; margin-top: 4px; }
+  .sidebar-section { margin-top: 22px; }
+  .sidebar-section h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #93C5FD; border-bottom: 1px solid rgba(147,197,253,0.3); padding-bottom: 6px; margin-bottom: 10px; }
+  .contact-item { font-size: 11px; margin-bottom: 6px; color: #E0E7FF; display: flex; align-items: flex-start; gap: 6px; }
+  .skill-row { margin-bottom: 8px; }
+  .skill-name { font-size: 11px; margin-bottom: 3px; }
+  .skill-bar { background: rgba(255,255,255,0.15); border-radius: 10px; height: 5px; }
+  .skill-fill { background: #3B82F6; border-radius: 10px; height: 5px; }
+  .edu-item { margin-bottom: 10px; }
+  .edu-degree { font-size: 11px; font-weight: 600; }
+  .edu-school { font-size: 10px; color: #93C5FD; }
+  .edu-year { font-size: 10px; color: #9CA3AF; }
+  .main { flex: 1; padding: 28px 32px; background: #fff; }
+  .main-section { margin-bottom: 24px; }
+  .main-section h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #1E3A5F; border-bottom: 2px solid #DBEAFE; padding-bottom: 6px; margin-bottom: 14px; }
+  .summary-text { line-height: 1.7; color: #374151; }
+  .exp-item { margin-bottom: 16px; }
+  .exp-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .exp-title { font-weight: 700; font-size: 13px; color: #1E3A5F; }
+  .exp-date { font-size: 10px; color: #6B7280; }
+  .exp-company { font-size: 11px; color: #2563EB; font-weight: 600; margin-top: 2px; }
+  .exp-bullets { margin-top: 6px; padding-left: 16px; }
+  .exp-bullets li { font-size: 11px; color: #374151; margin-bottom: 4px; line-height: 1.5; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag { background: #EFF6FF; color: #1D4ED8; font-size: 10px; padding: 3px 9px; border-radius: 12px; font-weight: 600; }
+  .cert-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 11px; }
+  .cert-icon { color: #F59E0B; font-size: 14px; }
+  @media print { body { -webkit-print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="avatar">{{INITIALS}}</div>
+  <div class="sidebar-name">{{FULL_NAME}}</div>
+  <div class="sidebar-title">{{JOB_TITLE}}</div>
+
+  <div class="sidebar-section">
+    <h3>Contact</h3>
+    <div class="contact-item">✉ {{EMAIL}}</div>
+    <div class="contact-item">☎ {{PHONE}}</div>
+    <div class="contact-item">📍 {{LOCATION}}</div>
+    <div class="contact-item">🔗 linkedin.com/in/{{LINKEDIN}}</div>
+    <div class="contact-item">💻 github.com/{{GITHUB}}</div>
+  </div>
+
+  <div class="sidebar-section">
+    <h3>Technical Skills</h3>
+    <div class="skill-row"><div class="skill-name">C# / .NET</div><div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div></div>
+    <div class="skill-row"><div class="skill-name">React / TypeScript</div><div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div></div>
+    <div class="skill-row"><div class="skill-name">SQL / PostgreSQL</div><div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div></div>
+    <div class="skill-row"><div class="skill-name">Azure / AWS</div><div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div></div>
+    <div class="skill-row"><div class="skill-name">Docker / Kubernetes</div><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div>
+    <div class="skill-row"><div class="skill-name">Python / FastAPI</div><div class="skill-bar"><div class="skill-fill" style="width:65%"></div></div></div>
+  </div>
+
+  <div class="sidebar-section">
+    <h3>Education</h3>
+    <div class="edu-item">
+      <div class="edu-degree">B.Sc. Computer Science</div>
+      <div class="edu-school">Massachusetts Institute of Technology</div>
+      <div class="edu-year">2015 – 2019</div>
+    </div>
+    <div class="edu-item">
+      <div class="edu-degree">M.Sc. Software Engineering</div>
+      <div class="edu-school">Stanford University</div>
+      <div class="edu-year">2019 – 2021</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="main-section">
+    <h2>Professional Summary</h2>
+    <p class="summary-text">
+      {{SUMMARY}}
+    </p>
+  </div>
+
+  <div class="main-section">
+    <h2>Work Experience</h2>
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <div class="exp-title">Senior Software Engineer</div>
+        <div class="exp-date">Jan 2023 – Present</div>
+      </div>
+      <div class="exp-company">Microsoft Corporation · Redmond, WA</div>
+      <ul class="exp-bullets">
+        <li>Architected microservices platform handling 50M+ daily API requests with 99.99% uptime</li>
+        <li>Led migration of legacy .NET Framework apps to .NET 8, reducing hosting costs by 35%</li>
+        <li>Mentored team of 6 junior developers and established code review best practices</li>
+        <li>Implemented real-time analytics pipeline using Azure Event Hubs and SignalR</li>
+      </ul>
+      <div class="tags"><span class="tag">C# 12</span><span class="tag">ASP.NET Core</span><span class="tag">Azure</span><span class="tag">SignalR</span><span class="tag">Redis</span></div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <div class="exp-title">Full-Stack Developer</div>
+        <div class="exp-date">Mar 2021 – Dec 2022</div>
+      </div>
+      <div class="exp-company">Acme Software · New York, NY</div>
+      <ul class="exp-bullets">
+        <li>Built React + TypeScript SPA with 40+ reusable components and comprehensive test suite</li>
+        <li>Designed PostgreSQL schema for multi-tenant SaaS application with RBAC</li>
+        <li>Integrated Stripe payment processing, handling $2M+ monthly transactions</li>
+      </ul>
+      <div class="tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">PostgreSQL</span><span class="tag">Docker</span></div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <div class="exp-title">Software Developer</div>
+        <div class="exp-date">Jun 2019 – Feb 2021</div>
+      </div>
+      <div class="exp-company">StartupCo · San Francisco, CA</div>
+      <ul class="exp-bullets">
+        <li>Developed REST APIs using ASP.NET Core and Entity Framework Core</li>
+        <li>Built automated CI/CD pipelines using GitHub Actions and Azure DevOps</li>
+      </ul>
+      <div class="tags"><span class="tag">ASP.NET Core</span><span class="tag">EF Core</span><span class="tag">CI/CD</span></div>
+    </div>
+  </div>
+
+  <div class="main-section">
+    <h2>Certifications</h2>
+    <div class="cert-item"><span class="cert-icon">★</span><span><strong>Microsoft Azure Solutions Architect Expert</strong> · AZ-305 · 2024</span></div>
+    <div class="cert-item"><span class="cert-icon">★</span><span><strong>AWS Certified Developer Associate</strong> · DVA-C02 · 2023</span></div>
+    <div class="cert-item"><span class="cert-icon">★</span><span><strong>Certified Kubernetes Administrator</strong> · CKA · 2022</span></div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] — IronPDF Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="bi bi-file-pdf-fill"></i></div>
+            <div>
+                <div class="brand-name">IronPDF</div>
+                <div class="brand-version">v2026.5.2 Demo</div>
+            </div>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-section-label">Conversion</div>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Index" ? "active" : "")" href="/">
+                <i class="bi bi-house"></i><span>Overview</span>
+            </a>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Conversion" ? "active" : "")" href="/Conversion">
+                <i class="bi bi-arrow-left-right"></i><span>Convert</span>
+            </a>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Templates" ? "active" : "")" href="/Templates">
+                <i class="bi bi-grid-3x3-gap"></i><span>Templates</span>
+            </a>
+            <div class="nav-section-label">Editing</div>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Manipulation" ? "active" : "")" href="/Manipulation">
+                <i class="bi bi-scissors"></i><span>Manipulate</span>
+            </a>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Annotations" ? "active" : "")" href="/Annotations">
+                <i class="bi bi-pencil-square"></i><span>Annotate</span>
+            </a>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Metadata" ? "active" : "")" href="/Metadata">
+                <i class="bi bi-info-circle"></i><span>Metadata</span>
+            </a>
+            <div class="nav-section-label">Security & Forms</div>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Security" ? "active" : "")" href="/Security">
+                <i class="bi bi-shield-lock"></i><span>Security</span>
+            </a>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Forms" ? "active" : "")" href="/Forms">
+                <i class="bi bi-ui-checks"></i><span>Forms</span>
+            </a>
+            <div class="nav-section-label">Advanced</div>
+            <a class="nav-item @(ViewData["ActivePage"]?.ToString() == "Batch" ? "active" : "")" href="/Batch">
+                <i class="bi bi-collection"></i><span>Batch + SignalR</span>
+            </a>
+            <div class="nav-section-label">API</div>
+            <a class="nav-item" href="/swagger" target="_blank">
+                <i class="bi bi-code-slash"></i><span>Swagger UI</span>
+            </a>
+            <a class="nav-item" href="/health" target="_blank">
+                <i class="bi bi-heart-pulse"></i><span>Health Check</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <button class="theme-toggle-btn" id="themeToggle" title="Toggle theme">
+                <i class="bi bi-moon-stars" id="themeIcon"></i>
+            </button>
+            <div class="sidebar-footer-text">
+                <div style="font-weight:600;font-size:12px;">IronPDF Demo</div>
+                <div style="font-size:10px;opacity:0.6;">.NET 8 · IronPDF 2026.5.2</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <!-- Top bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle d-lg-none" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="page-title">@ViewData["Title"]</h1>
+            </div>
+            <div class="topbar-right">
+                <a href="/swagger" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-code-slash me-1"></i>API Docs
+                </a>
+            </div>
+        </div>
+
+        <!-- Toast container -->
+        <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer" style="z-index:1100;"></div>
+
+        <!-- Page content -->
+        <div class="page-body">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar overlay for mobile -->
+<div class="sidebar-overlay d-lg-none" id="sidebarOverlay"></div>
+
+<!-- Top navigation progress bar -->
+<div class="nav-progress" id="navProgress"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/toast.js"></script>
+<script src="~/js/theme-toggle.js"></script>
+<script src="~/js/dragdrop.js"></script>
+<script src="~/js/site.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,106 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Overview";
+    ViewData["ActivePage"] = "Index";
+}
+
+<div class="mb-4">
+    <p class="text-muted">IronPDF 2026.5.2 — Complete PDF processing demo with 31 API endpoints across 7 feature domains.</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:#4F46E5;">31</div>
+            <div class="text-muted" style="font-size:12px;">API Endpoints</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:#059669;">7</div>
+            <div class="text-muted" style="font-size:12px;">Templates</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:#D97706;">@Model.OutputFileCount</div>
+            <div class="text-muted" style="font-size:12px;">Generated Files</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:@(Model.IsLicensed ? "#059669" : "#DC2626");">
+                @(Model.IsLicensed ? "✓" : "Trial")
+            </div>
+            <div class="text-muted" style="font-size:12px;">License Status</div>
+        </div>
+    </div>
+</div>
+
+<h5 class="section-header">Feature Showcase</h5>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a href="/Conversion" class="feature-card">
+            <div class="icon"><i class="bi bi-arrow-left-right"></i></div>
+            <h3>Conversion</h3>
+            <p>Convert HTML, URLs, images, and DOCX files to PDF with full rendering control.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Templates" class="feature-card">
+            <div class="icon"><i class="bi bi-grid-3x3-gap"></i></div>
+            <h3>Templates</h3>
+            <p>Generate PDFs from 7 professional templates: Invoice, Report, Dashboard, Certificate, Resume, Brochure, Form.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Manipulation" class="feature-card">
+            <div class="icon"><i class="bi bi-scissors"></i></div>
+            <h3>Manipulation</h3>
+            <p>Merge, split, rotate, compress, and redact PDFs.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Annotations" class="feature-card">
+            <div class="icon"><i class="bi bi-pencil-square"></i></div>
+            <h3>Annotations</h3>
+            <p>Add headers, footers, text/image watermarks, sticky-note annotations, and bookmarks.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Security" class="feature-card">
+            <div class="icon"><i class="bi bi-shield-lock"></i></div>
+            <h3>Security</h3>
+            <p>Password protect, digitally sign with PFX certificates, and verify signatures.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Forms" class="feature-card">
+            <div class="icon"><i class="bi bi-ui-checks"></i></div>
+            <h3>PDF Forms</h3>
+            <p>Create fillable AcroForms from HTML, inspect fields, fill values, and flatten forms.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Metadata" class="feature-card">
+            <div class="icon"><i class="bi bi-info-circle"></i></div>
+            <h3>Metadata</h3>
+            <p>Read and write PDF metadata (title, author, keywords) and convert to PDF/A.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Batch" class="feature-card">
+            <div class="icon"><i class="bi bi-collection"></i></div>
+            <h3>Batch + SignalR</h3>
+            <p>Process multiple files in parallel with real-time progress via SignalR WebSockets.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/swagger" target="_blank" class="feature-card">
+            <div class="icon"><i class="bi bi-code-slash"></i></div>
+            <h3>Swagger API</h3>
+            <p>Explore and test all 31 API endpoints with full interactive documentation.</p>
+        </a>
+    </div>
+</div>

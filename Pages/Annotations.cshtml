@@ -1,0 +1,342 @@
+@page
+@model AnnotationsModel
+@{
+    ViewData["Title"] = "Annotations & Watermarks";
+    ViewData["ActivePage"] = "Annotations";
+}
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link active" href="#headerfooter" data-bs-toggle="tab">Header/Footer</a></li>
+    <li class="nav-item"><a class="nav-link" href="#watermarktext" data-bs-toggle="tab">Text Watermark</a></li>
+    <li class="nav-item"><a class="nav-link" href="#watermarkimage" data-bs-toggle="tab">Image Watermark</a></li>
+    <li class="nav-item"><a class="nav-link" href="#annotate" data-bs-toggle="tab">Sticky Notes</a></li>
+    <li class="nav-item"><a class="nav-link" href="#bookmarks" data-bs-toggle="tab">Bookmarks</a></li>
+</ul>
+
+<div class="tab-content">
+    <!-- Header / Footer -->
+    <div class="tab-pane fade show active" id="headerfooter">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Add Header &amp; Footer</h5>
+            <form id="hfForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="hfZone">
+                    <i class="bi bi-file-pdf"></i><p>Select a PDF</p>
+                    <input type="file" name="File" id="hfInput" accept=".pdf" class="d-none"/>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Header HTML</label>
+                        <textarea name="HeaderHtml" class="form-control font-monospace" rows="3" placeholder="<div style='text-align:center'>{{COMPANY}} — Page {page} of {total-pages}</div>"><div style="text-align:center; font-size:11px; color:#555;">IronPDF Demo — Page {page} of {total-pages}</div></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Footer HTML</label>
+                        <textarea name="FooterHtml" class="form-control font-monospace" rows="3" placeholder="<div style='text-align:right'>Confidential</div>"><div style="text-align:right; font-size:11px; color:#555;">Confidential &copy; 2026</div></textarea>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-auto">
+                        <label class="form-label">Header Height (px)</label>
+                        <input type="number" name="HeaderHeightPx" class="form-control w-auto" value="40" min="10" max="200"/>
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label">Footer Height (px)</label>
+                        <input type="number" name="FooterHeightPx" class="form-control w-auto" value="40" min="10" max="200"/>
+                    </div>
+                    <div class="col-auto d-flex align-items-end">
+                        <div class="form-check mb-1">
+                            <input class="form-check-input" type="checkbox" name="DrawDividerLine" value="true" id="divider" checked/>
+                            <label class="form-check-label" for="divider">Draw divider line</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-layout-text-window me-1"></i>Apply</button>
+            </form>
+            <div id="hfResult" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Text Watermark -->
+    <div class="tab-pane fade" id="watermarktext">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Text Watermark</h5>
+            <form id="wtForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="wtZone">
+                    <i class="bi bi-file-pdf"></i><p>Select a PDF</p>
+                    <input type="file" name="File" id="wtInput" accept=".pdf" class="d-none"/>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-5">
+                        <label class="form-label">Watermark Text</label>
+                        <input type="text" name="WatermarkText" class="form-control" value="CONFIDENTIAL"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Font Size (px)</label>
+                        <input type="number" name="FontSizePx" class="form-control" value="60" min="10" max="200"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Color (hex)</label>
+                        <input type="text" name="Color" class="form-control" value="#FF0000"/>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Opacity: <span id="opacityVal">30</span>%</label>
+                        <input type="range" name="Opacity" class="form-range" min="5" max="100" value="30" oninput="document.getElementById('opacityVal').textContent=this.value"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Rotation (°)</label>
+                        <input type="number" name="RotationDeg" class="form-control" value="45" min="-180" max="180"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Vertical Align</label>
+                        <select name="VerticalAlignment" class="form-select">
+                            <option>Middle</option>
+                            <option>Top</option>
+                            <option>Bottom</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Horizontal Align</label>
+                        <select name="HorizontalAlignment" class="form-select">
+                            <option>Center</option>
+                            <option>Left</option>
+                            <option>Right</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-type me-1"></i>Apply Watermark</button>
+            </form>
+            <div id="wtResult" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Image Watermark -->
+    <div class="tab-pane fade" id="watermarkimage">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Image Watermark / Stamp</h5>
+            <form id="wiForm" enctype="multipart/form-data">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">PDF File</label>
+                        <div class="upload-zone" id="wiPdfZone">
+                            <i class="bi bi-file-pdf"></i><p>Select a PDF</p>
+                            <input type="file" name="File" id="wiPdfInput" accept=".pdf" class="d-none"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Watermark Image</label>
+                        <div class="upload-zone" id="wiImgZone">
+                            <i class="bi bi-image"></i><p>Select an image (PNG/JPG)</p>
+                            <input type="file" name="WatermarkImage" id="wiImgInput" accept=".png,.jpg,.jpeg,.gif" class="d-none"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Opacity: <span id="imgOpacityVal">50</span>%</label>
+                        <input type="range" name="Opacity" class="form-range" min="5" max="100" value="50" oninput="document.getElementById('imgOpacityVal').textContent=this.value"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Rotation (°)</label>
+                        <input type="number" name="RotationDeg" class="form-control" value="0" min="-180" max="180"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Scale: <span id="scaleVal">50</span>%</label>
+                        <input type="range" name="ScalePercent" class="form-range" min="5" max="100" value="50" oninput="document.getElementById('scaleVal').textContent=this.value"/>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-image me-1"></i>Apply Image Watermark</button>
+            </form>
+            <div id="wiResult" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Sticky Note Annotations -->
+    <div class="tab-pane fade" id="annotate">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Add Sticky Note Annotations</h5>
+            <form id="annotForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="annotZone">
+                    <i class="bi bi-file-pdf"></i><p>Select a PDF</p>
+                    <input type="file" name="File" id="annotInput" accept=".pdf" class="d-none"/>
+                </div>
+                <div id="annotationEntries">
+                    <div class="annotation-entry border rounded p-3 mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Title</label>
+                                <input type="text" name="Annotations[0].Title" class="form-control" value="Review Note"/>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Page</label>
+                                <input type="number" name="Annotations[0].PageIndex" class="form-control" value="0" min="0"/>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">X (pt)</label>
+                                <input type="number" name="Annotations[0].X" class="form-control" value="50"/>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Y (pt)</label>
+                                <input type="number" name="Annotations[0].Y" class="form-control" value="700"/>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Contents</label>
+                                <textarea name="Annotations[0].Contents" class="form-control" rows="2">This document requires review before final approval.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addAnnotationEntry()">
+                    <i class="bi bi-plus me-1"></i>Add Another Annotation
+                </button>
+                <br/>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-sticky me-1"></i>Add Annotations</button>
+            </form>
+            <div id="annotResult" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Bookmarks -->
+    <div class="tab-pane fade" id="bookmarks">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Add Bookmarks</h5>
+            <form id="bookmarkForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="bookmarkZone">
+                    <i class="bi bi-file-pdf"></i><p>Select a PDF</p>
+                    <input type="file" name="File" id="bookmarkInput" accept=".pdf" class="d-none"/>
+                </div>
+                <div id="bookmarkEntries">
+                    <div class="border rounded p-3 mb-2">
+                        <div class="row g-2">
+                            <div class="col-md-6"><label class="form-label">Bookmark Title</label>
+                                <input type="text" name="Bookmarks[0].Title" class="form-control" value="Chapter 1: Introduction"/></div>
+                            <div class="col-md-2"><label class="form-label">Page Index</label>
+                                <input type="number" name="Bookmarks[0].PageIndex" class="form-control" value="0" min="0"/></div>
+                            <div class="col-md-3"><label class="form-label">Parent (blank = root)</label>
+                                <input type="text" name="Bookmarks[0].ParentTitle" class="form-control" placeholder="Parent bookmark title"/></div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addBookmarkEntry()">
+                    <i class="bi bi-plus me-1"></i>Add Bookmark
+                </button>
+                <br/>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-bookmarks me-1"></i>Add Bookmarks</button>
+            </form>
+            <div id="bookmarkResult" style="display:none;"></div>
+        </div></div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+['hfZone hfInput .pdf','wtZone wtInput .pdf','wiPdfZone wiPdfInput .pdf','wiImgZone wiImgInput .png',
+ 'annotZone annotInput .pdf','bookmarkZone bookmarkInput .pdf'].forEach(s => {
+    const [z,i,a] = s.split(' ');
+    initDragDrop(z, i, a);
+});
+
+// Header/Footer
+document.getElementById('hfForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Applying...';
+    try {
+        const res = await fetch('/api/annotations/header-footer', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'hfResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+// Text Watermark
+document.getElementById('wtForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Applying...';
+    try {
+        const res = await fetch('/api/annotations/watermark/text', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'wtResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+// Image Watermark
+document.getElementById('wiForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Applying...';
+    try {
+        const res = await fetch('/api/annotations/watermark/image', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'wiResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+// Annotations
+document.getElementById('annotForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adding...';
+    try {
+        const res = await fetch('/api/annotations/annotate', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'annotResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+// Bookmarks
+document.getElementById('bookmarkForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adding...';
+    try {
+        const res = await fetch('/api/annotations/bookmarks', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'bookmarkResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+let annotCount = 1;
+function addAnnotationEntry() {
+    const idx = annotCount++;
+    const div = document.createElement('div');
+    div.className = 'annotation-entry border rounded p-3 mb-3';
+    div.innerHTML = `<div class="row g-3">
+        <div class="col-md-4"><label class="form-label">Title</label><input type="text" name="Annotations[${idx}].Title" class="form-control" value="Note ${idx+1}"/></div>
+        <div class="col-md-2"><label class="form-label">Page</label><input type="number" name="Annotations[${idx}].PageIndex" class="form-control" value="0" min="0"/></div>
+        <div class="col-md-2"><label class="form-label">X (pt)</label><input type="number" name="Annotations[${idx}].X" class="form-control" value="50"/></div>
+        <div class="col-md-2"><label class="form-label">Y (pt)</label><input type="number" name="Annotations[${idx}].Y" class="form-control" value="${600 - idx*50}"/></div>
+        <div class="col-12"><label class="form-label">Contents</label><textarea name="Annotations[${idx}].Contents" class="form-control" rows="2">Annotation ${idx+1}</textarea></div>
+    </div>`;
+    document.getElementById('annotationEntries').appendChild(div);
+}
+
+let bmCount = 1;
+function addBookmarkEntry() {
+    const idx = bmCount++;
+    const div = document.createElement('div');
+    div.className = 'border rounded p-3 mb-2';
+    div.innerHTML = `<div class="row g-2">
+        <div class="col-md-6"><label class="form-label">Bookmark Title</label><input type="text" name="Bookmarks[${idx}].Title" class="form-control" value="Section ${idx+1}"/></div>
+        <div class="col-md-2"><label class="form-label">Page Index</label><input type="number" name="Bookmarks[${idx}].PageIndex" class="form-control" value="${idx}" min="0"/></div>
+        <div class="col-md-3"><label class="form-label">Parent (blank = root)</label><input type="text" name="Bookmarks[${idx}].ParentTitle" class="form-control" placeholder="Parent bookmark title"/></div>
+    </div>`;
+    document.getElementById('bookmarkEntries').appendChild(div);
+}
+</script>
+}

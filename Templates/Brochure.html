@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>{{COMPANY_NAME}} — Product Brochure</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; width: 297mm; height: 210mm; overflow: hidden; background: #fff; }
+  .layout { display: grid; grid-template-columns: 1fr 1fr 1fr; height: 210mm; }
+  .col { padding: 0; overflow: hidden; }
+  .col-hero { background: linear-gradient(160deg, #4F46E5 0%, #7C3AED 60%, #6D28D9 100%); color: #fff; padding: 32px 28px; display: flex; flex-direction: column; justify-content: space-between; }
+  .col-content { padding: 28px 24px; border-right: 1px solid #E5E7EB; }
+  .col-aside { padding: 28px 24px; background: #F9FAFB; }
+  .hero-badge { background: rgba(255,255,255,0.15); display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
+  .hero-title { font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 14px; }
+  .hero-desc { font-size: 12px; line-height: 1.7; opacity: 0.9; margin-bottom: 20px; }
+  .hero-cta { background: #fff; color: #4F46E5; font-weight: 700; font-size: 12px; padding: 10px 20px; border-radius: 8px; display: inline-block; text-decoration: none; }
+  .hero-graphic { background: rgba(255,255,255,0.1); border-radius: 16px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+  .hero-graphic svg { width: 60px; height: 60px; }
+  .stats-row { display: flex; gap: 12px; }
+  .stat { text-align: center; }
+  .stat-val { font-size: 20px; font-weight: 800; }
+  .stat-lbl { font-size: 9px; opacity: 0.8; text-transform: uppercase; }
+  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #4F46E5; border-bottom: 2px solid #EEF2FF; padding-bottom: 6px; margin-bottom: 14px; margin-top: 20px; }
+  .section-title:first-child { margin-top: 0; }
+  .feature { display: flex; gap: 10px; margin-bottom: 12px; }
+  .feature-icon { width: 28px; height: 28px; background: #EEF2FF; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+  .feature-text h4 { font-size: 12px; font-weight: 700; color: #1F2937; }
+  .feature-text p { font-size: 11px; color: #6B7280; line-height: 1.5; margin-top: 2px; }
+  .price-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 14px; }
+  .price-table th { background: #4F46E5; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+  .price-table td { padding: 8px 10px; border-bottom: 1px solid #E5E7EB; }
+  .price-table tr:nth-child(even) td { background: #F9FAFB; }
+  .testimonial { background: #EEF2FF; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .testimonial blockquote { font-size: 11px; font-style: italic; color: #374151; line-height: 1.6; }
+  .testimonial .author { margin-top: 10px; font-size: 11px; font-weight: 700; color: #4F46E5; }
+  .about { font-size: 11px; color: #374151; line-height: 1.6; }
+  .contact-block { background: #4F46E5; color: #fff; border-radius: 10px; padding: 14px; margin-top: 16px; font-size: 11px; }
+  .contact-block h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .qr-placeholder { width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; text-align: center; float: right; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Column 1: Hero -->
+  <div class="col col-hero">
+    <div>
+      <div class="hero-badge">✦ New 2026 Edition</div>
+      <div class="hero-graphic">
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="8" width="36" height="46" rx="3" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+          <rect x="10" y="16" width="24" height="3" rx="1.5" fill="rgba(255,255,255,0.7)"/>
+          <rect x="10" y="23" width="18" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="10" y="29" width="22" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="10" y="35" width="15" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="46" cy="46" r="12" fill="#F59E0B"/>
+          <text x="46" y="50" text-anchor="middle" font-size="11" font-weight="bold" fill="white">PDF</text>
+        </svg>
+      </div>
+      <div class="hero-title">{{COMPANY_NAME}}</div>
+      <div class="hero-desc">{{TAGLINE}}</div>
+      <div class="hero-cta">Get Started Free →</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-val">50K+</div><div class="stat-lbl">Customers</div></div>
+      <div class="stat"><div class="stat-val">99.9%</div><div class="stat-lbl">Uptime</div></div>
+      <div class="stat"><div class="stat-val">4.9★</div><div class="stat-lbl">Rating</div></div>
+    </div>
+  </div>
+
+  <!-- Column 2: Features & Pricing -->
+  <div class="col col-content">
+    <div class="section-title">Key Features</div>
+    <div class="feature">
+      <div class="feature-icon">📄</div>
+      <div class="feature-text"><h4>HTML to PDF</h4><p>Pixel-perfect conversion from HTML, CSS, and JavaScript</p></div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-text"><h4>Security & Signing</h4><p>Password protection and digital signatures</p></div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📝</div>
+      <div class="feature-text"><h4>PDF Forms</h4><p>Create, fill, and flatten AcroForm PDF forms</p></div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔗</div>
+      <div class="feature-text"><h4>Merge & Split</h4><p>Combine or divide PDFs with precision</p></div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">💧</div>
+      <div class="feature-text"><h4>Watermarks</h4><p>Text and image watermarks with opacity control</p></div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📊</div>
+      <div class="feature-text"><h4>Metadata</h4><p>Read and write all PDF metadata fields</p></div>
+    </div>
+
+    <div class="section-title">Pricing</div>
+    <table class="price-table">
+      <tr><th>Plan</th><th>Price</th><th>PDFs/mo</th></tr>
+      <tr><td>Starter</td><td>$49</td><td>1,000</td></tr>
+      <tr><td>Professional</td><td>$149</td><td>10,000</td></tr>
+      <tr><td>Enterprise</td><td>Custom</td><td>Unlimited</td></tr>
+    </table>
+  </div>
+
+  <!-- Column 3: Testimonials & Contact -->
+  <div class="col col-aside">
+    <div class="section-title">What Our Customers Say</div>
+    <div class="testimonial">
+      <blockquote>"IronPDF transformed our document workflow. We generate 50,000 invoices per month with zero issues. The API is clean and the support is outstanding."</blockquote>
+      <div class="author">— Sarah Chen, CTO at FinanceFirst</div>
+    </div>
+    <div class="testimonial">
+      <blockquote>"We evaluated 5 PDF libraries. IronPDF was the only one that handled our complex CSS layouts perfectly. Implementation took just 2 days."</blockquote>
+      <div class="author">— Marcus Weber, Lead Dev at DocuFlow</div>
+    </div>
+
+    <div class="section-title">About Us</div>
+    <div class="about">
+      Iron Software was founded in 2018 with a mission to provide .NET developers with world-class document processing tools. With offices in Chicago and London, we serve 50,000+ customers across 120 countries.
+    </div>
+
+    <div class="contact-block">
+      <div class="qr-placeholder">Scan<br/>QR</div>
+      <h4>Get In Touch</h4>
+      <div>🌐 ironpdf.com</div>
+      <div>✉ support@ironsoftware.com</div>
+      <div>☎ +1 (312) 555-0142</div>
+      <div style="margin-top:6px;font-size:10px;opacity:0.8;">Free 30-day trial · No credit card</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

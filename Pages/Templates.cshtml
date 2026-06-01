@@ -1,0 +1,125 @@
+@page
+@model TemplatesModel
+@{
+    ViewData["Title"] = "PDF Templates";
+    ViewData["ActivePage"] = "Templates";
+}
+
+<p class="text-muted mb-4">Generate professional PDFs from 7 built-in templates. Variables use <code>{{TOKEN}}</code> syntax.</p>
+
+<div class="row g-4">
+    @foreach (var tmpl in Model.Templates)
+    {
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge-feature">@tmpl.Category</span>
+                        <h5 class="mb-0 fw-700">@tmpl.Name</h5>
+                    </div>
+                    <p class="text-muted" style="font-size:12px;">@tmpl.Description</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <button class="btn btn-primary btn-sm" onclick="generateTemplate('@tmpl.Name', this)">
+                            <i class="bi bi-file-pdf me-1"></i>Generate
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="previewTemplate('@tmpl.Name')">
+                            <i class="bi bi-eye me-1"></i>Preview
+                        </button>
+                    </div>
+                    <div class="mt-2 template-result" id="result-@tmpl.Name" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalTitle">Template Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center" id="previewModalBody">
+                <div class="spinner-border text-primary"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+async function generateTemplate(name, btn) {
+    const body = {
+        templateName: name,
+        variables: getDefaultVars(name),
+        enableJs: name === 'Dashboard',
+        addHeaderFooter: true,
+        paperSize: name === 'Brochure' ? 'A4' : 'A4',
+        orientation: name === 'Brochure' ? 'Landscape' : 'Portrait'
+    };
+    if (!btn) btn = event.currentTarget || event.target;
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Generating...';
+    try {
+        const res = await fetch('/api/templates/generate', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        const data = await res.json();
+        if (res.ok) {
+            renderResult(data, 'result-' + name);
+        } else showToast(data.error || 'Failed', 'error');
+    } catch(e) { showToast('Error: '+e.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+}
+
+async function previewTemplate(name) {
+    const modalEl = document.getElementById('previewModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    const body = document.getElementById('previewModalBody');
+    document.getElementById('previewModalTitle').textContent = name + ' Preview';
+    // Soft skeleton while loading (no jarring spinner-only swap)
+    body.innerHTML = `
+        <div class="preview-skeleton">
+            <div class="spinner-border text-primary mb-3"></div>
+            <div class="text-muted small">Rendering ${name} preview…</div>
+        </div>`;
+    modal.show();
+    try {
+        const res = await fetch('/api/templates/preview/' + name);
+        const data = await res.json();
+        if (res.ok && data.base64Image) {
+            // Preload so the image fades in fully rendered, no half-paint flash
+            const img = new Image();
+            img.src = data.base64Image;
+            img.className = 'img-fluid rounded preview-image';
+            img.style.maxHeight = '600px';
+            img.onload = () => {
+                body.innerHTML = '';
+                body.appendChild(img);
+                // Trigger fade-in next frame
+                requestAnimationFrame(() => img.classList.add('loaded'));
+            };
+            img.onerror = () => { body.innerHTML = '<div class="text-muted">Preview unavailable</div>'; };
+        } else {
+            body.innerHTML = '<div class="text-muted">Preview unavailable</div>';
+        }
+    } catch(e) {
+        body.innerHTML = '<div class="text-danger">' + e.message + '</div>';
+    }
+}
+
+function getDefaultVars(name) {
+    const today = new Date().toLocaleDateString();
+    const vars = {
+        Invoice: { INVOICE_NUMBER: 'INV-2026-001', DATE: today, DUE_DATE: today, CLIENT_NAME: 'Acme Corp', CLIENT_EMAIL: 'billing@acme.com', CLIENT_ADDRESS: '100 Main St, New York', PROJECT_NAME: 'Web Platform', PROJECT_CODE: 'PRJ-001', BILLING_PERIOD: 'May 2026', TOTAL: '$12,665.64' },
+        Report: { REPORT_TITLE: 'Q2 2026 Business Report', PERIOD: 'Q2 2026', GENERATED_DATE: today, KPI_REVENUE: '$4.85M', KPI_CUSTOMERS: '24,781', KPI_NPS: '72' },
+        Dashboard: { DASHBOARD_TITLE: 'IronPDF Analytics Dashboard', GENERATED_DATE: today },
+        Certificate: { RECIPIENT_NAME: 'Jane Smith', COURSE_NAME: 'Advanced PDF Development with IronPDF', DIRECTOR_NAME: 'Dr. Robert Chen', INSTRUCTOR_NAME: 'Alex Johnson', CERT_ID: 'CERT-2026-' + Math.random().toString(36).substr(2,6).toUpperCase(), ISSUE_DATE: today, CERT_YEAR: '2026' },
+        Resume: { FULL_NAME: 'Alex Johnson', JOB_TITLE: 'Senior Software Engineer', INITIALS: 'AJ', EMAIL: 'alex@example.com', PHONE: '+1 (555) 123-4567', LOCATION: 'New York, NY', LINKEDIN: 'alexjohnson', GITHUB: 'alexjohnson', SUMMARY: 'Experienced software engineer with 7+ years building high-performance .NET applications and modern web solutions. Passionate about clean architecture and developer experience.' },
+        Brochure: { COMPANY_NAME: 'IronPDF', TAGLINE: 'The most powerful PDF library for .NET developers. Generate, edit, and process PDFs with ease.' },
+        FormTemplate: {}
+    };
+    return vars[name] || {};
+}
+</script>
+}

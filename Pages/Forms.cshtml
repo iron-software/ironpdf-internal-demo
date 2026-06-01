@@ -1,0 +1,229 @@
+@page
+@model FormsModel
+@{
+    ViewData["Title"] = "PDF Forms (AcroForms)";
+    ViewData["ActivePage"] = "Forms";
+}
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link active" href="#fields" data-bs-toggle="tab">Inspect Fields</a></li>
+    <li class="nav-item"><a class="nav-link" href="#fill" data-bs-toggle="tab">Fill Form</a></li>
+    <li class="nav-item"><a class="nav-link" href="#flatten" data-bs-toggle="tab">Flatten</a></li>
+    <li class="nav-item"><a class="nav-link" href="#create" data-bs-toggle="tab">Create from HTML</a></li>
+</ul>
+
+<div class="tab-content">
+    <!-- Inspect Fields -->
+    <div class="tab-pane fade show active" id="fields">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Inspect Form Fields</h5>
+            <p class="text-muted small">Upload a PDF with AcroForm fields to list all field names, types, and current values.</p>
+            <form id="fieldsForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="fieldsZone">
+                    <i class="bi bi-ui-checks"></i><p>Select a fillable PDF</p>
+                    <input type="file" name="File" id="fieldsInput" accept=".pdf" class="d-none"/>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-list-check me-1"></i>Get Fields</button>
+            </form>
+            <div id="fieldsResult" class="mt-3" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Fill Form -->
+    <div class="tab-pane fade" id="fill">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Fill Form Fields</h5>
+            <p class="text-muted small">First inspect the PDF to see field names, then fill them below.</p>
+            <form id="fillForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="fillZone">
+                    <i class="bi bi-ui-checks"></i><p>Select a fillable PDF</p>
+                    <input type="file" name="File" id="fillInput" accept=".pdf" class="d-none"/>
+                </div>
+                <div id="fillEntries">
+                    <div class="row g-2 mb-2 fill-entry">
+                        <div class="col-md-5">
+                            <label class="form-label">Field Name</label>
+                            <input type="text" name="Fields[0].Name" class="form-control" placeholder="e.g. FullName"/>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Value</label>
+                            <input type="text" name="Fields[0].Value" class="form-control" placeholder="e.g. Jane Smith"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addFillEntry()">
+                    <i class="bi bi-plus me-1"></i>Add Field
+                </button>
+                <br/>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="FlattenAfterFill" value="true" id="flattenAfterFill"/>
+                    <label class="form-check-label" for="flattenAfterFill">Flatten after filling</label>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square me-1"></i>Fill Form</button>
+            </form>
+            <div id="fillResult" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Flatten -->
+    <div class="tab-pane fade" id="flatten">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Flatten Form Fields</h5>
+            <p class="text-muted small">Flattening converts interactive form fields into static PDF content, making them non-editable.</p>
+            <form id="flattenForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="flattenZone">
+                    <i class="bi bi-ui-checks"></i><p>Select a fillable PDF</p>
+                    <input type="file" name="File" id="flattenInput" accept=".pdf" class="d-none"/>
+                </div>
+                <button type="submit" class="btn btn-warning"><i class="bi bi-lock2 me-1"></i>Flatten Fields</button>
+            </form>
+            <div id="flattenResult" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Create from HTML -->
+    <div class="tab-pane fade" id="create">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Create Fillable Form from HTML</h5>
+            <p class="text-muted small">IronPDF converts standard HTML form elements (<code>input</code>, <code>select</code>, <code>textarea</code>, <code>checkbox</code>, <code>radio</code>) into interactive AcroForm fields.</p>
+            <form id="createForm">
+                <div class="mb-3">
+                    <label class="form-label">HTML Content</label>
+                    <textarea name="HtmlContent" id="createHtml" class="form-control font-monospace" rows="16"><!DOCTYPE html>
+<html>
+<body style="font-family:Arial,sans-serif; padding:40px;">
+  <h2 style="color:#4F46E5;">Registration Form</h2>
+  <table width="100%" cellpadding="8">
+    <tr>
+      <td><label>Full Name:</label></td>
+      <td><input type="text" name="FullName" style="width:300px;"/></td>
+    </tr>
+    <tr>
+      <td><label>Email:</label></td>
+      <td><input type="text" name="Email" style="width:300px;"/></td>
+    </tr>
+    <tr>
+      <td><label>Department:</label></td>
+      <td><select name="Department" style="width:200px;">
+        <option>Engineering</option>
+        <option>Marketing</option>
+        <option>Finance</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td><label>Gender:</label></td>
+      <td>
+        <input type="radio" name="Gender" value="Male"/> Male &nbsp;
+        <input type="radio" name="Gender" value="Female"/> Female
+      </td>
+    </tr>
+    <tr>
+      <td><label>Newsletter:</label></td>
+      <td><input type="checkbox" name="Newsletter" value="Yes"/> Subscribe</td>
+    </tr>
+    <tr>
+      <td><label>Notes:</label></td>
+      <td><textarea name="Notes" rows="4" style="width:300px;"></textarea></td>
+    </tr>
+  </table>
+</body>
+</html></textarea>
+                </div>
+                <button type="submit" class="btn btn-success"><i class="bi bi-filetype-pdf me-1"></i>Create Fillable PDF</button>
+            </form>
+            <div id="createResult" style="display:none;"></div>
+        </div></div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+['fieldsZone fieldsInput .pdf','fillZone fillInput .pdf','flattenZone flattenInput .pdf'].forEach(s => {
+    const [z,i,a] = s.split(' ');
+    initDragDrop(z, i, a);
+});
+
+// Fields inspection
+document.getElementById('fieldsForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Inspecting...';
+    try {
+        const res = await fetch('/api/forms/fields', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        const container = document.getElementById('fieldsResult');
+        if (res.ok && Array.isArray(data.fields)) {
+            const rows = data.fields.map(f =>
+                `<tr><td>${f.name}</td><td><span class="badge bg-secondary">${f.fieldType}</span></td>
+                 <td><code>${f.value ?? ''}</code></td><td>${f.isReadOnly ? '🔒' : '✏️'}</td></tr>`
+            ).join('');
+            container.innerHTML = data.fields.length === 0
+                ? '<div class="alert alert-warning">No AcroForm fields found in this PDF.</div>'
+                : `<p class="text-muted small">${data.fields.length} field(s) found:</p>
+                   <table class="table table-sm table-bordered"><thead><tr><th>Name</th><th>Type</th><th>Value</th><th>Edit</th></tr></thead><tbody>${rows}</tbody></table>`;
+            container.style.display = 'block';
+            showToast(`${data.fields.length} fields found`, 'info');
+        } else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+// Fill form
+document.getElementById('fillForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Filling...';
+    try {
+        const res = await fetch('/api/forms/fill', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'fillResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+// Flatten
+document.getElementById('flattenForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Flattening...';
+    try {
+        const res = await fetch('/api/forms/flatten', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'flattenResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+// Create from HTML
+document.getElementById('createForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Creating...';
+    try {
+        const fd = new FormData(e.target);
+        const body = { htmlContent: fd.get('HtmlContent') };
+        const res = await fetch('/api/forms/create-from-html', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'createResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+let fillCount = 1;
+function addFillEntry() {
+    const idx = fillCount++;
+    const div = document.createElement('div');
+    div.className = 'row g-2 mb-2 fill-entry';
+    div.innerHTML = `<div class="col-md-5"><input type="text" name="Fields[${idx}].Name" class="form-control" placeholder="Field name"/></div>
+        <div class="col-md-5"><input type="text" name="Fields[${idx}].Value" class="form-control" placeholder="Value"/></div>`;
+    document.getElementById('fillEntries').appendChild(div);
+}
+</script>
+}
