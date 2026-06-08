@@ -1,814 +1,106 @@
-﻿@page
-@model IronPdfConverter.Pages.IndexModel
+@page
+@model IndexModel
 @{
-    ViewData["Title"] = "PDF Converter Pro";
+    ViewData["Title"] = "Overview";
+    ViewData["ActivePage"] = "Index";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+<div class="mb-4">
+    <p class="text-muted">IronPDF 2026.5.2 — Complete PDF processing demo with 31 API endpoints across 7 feature domains.</p>
+</div>
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --dark: #1d3557;
-            --light: #f8f9fa;
-            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            font-weight: 500;
-            color: #6c757d;
-            padding: 12px 24px;
-            transition: all 0.3s ease;
-        }
-
-            .nav-tabs .nav-link.active {
-                background: transparent;
-                color: var(--primary);
-                border-bottom: 3px solid var(--primary);
-            }
-
-            .nav-tabs .nav-link:hover {
-                color: var(--primary);
-                transform: translateY(-2px);
-            }
-
-        .conversion-card {
-            background: white;
-            border-radius: 15px;
-            border: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-            .conversion-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            }
-
-        .btn-primary {
-            background: var(--gradient);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
-            }
-
-        .file-upload-area {
-            border: 2px dashed #dee2e6;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-            .file-upload-area:hover {
-                border-color: var(--primary);
-                background: #f0f4ff;
-            }
-
-            .file-upload-area.dragover {
-                border-color: var(--primary);
-                background: #e8f4fd;
-            }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--gradient);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 24px;
-        }
-
-        .status-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 500;
-        }
-
-        .file-list-item {
-            border: none;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-            min-height: 90px;
-        }
-
-            .file-list-item:hover {
-                background: #e9ecef;
-                transform: translateX(5px);
-            }
-
-        .tab-content {
-            min-height: 400px;
-        }
-
-        .hero-section {
-            text-align: center;
-            padding: 40px 0;
-            color: white;
-        }
-
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff 0%, #f0f4ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
-        }
-
-        .redaction-card {
-            border-left: 4px solid #dc3545 !important;
-        }
-
-        /* Text wrapping styles */
-        .text-truncate-multiline {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-height: 1.5em;
-            max-height: 3em;
-            word-break: break-word;
-        }
-
-        .filename-tooltip {
-            cursor: help;
-        }
-
-        .file-display-name {
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container py-5">
-        <!-- Hero Section -->
-        <div class="hero-section mb-5">
-            <h1 class="hero-title">PDF Converter</h1>
-            <p class="hero-subtitle">Convert files, URLs, and HTML to professional PDF documents instantly</p>
-        </div>
-
-        <!-- Main Content -->
-        <div class="glass-card p-4">
-            <!-- Status Messages -->
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    <div>@TempData["Success"]</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <div>@TempData["Error"]</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-
-            <!-- Navigation Tabs -->
-            <ul class="nav nav-tabs nav-justified mb-4" id="converterTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="files-tab" data-bs-toggle="tab" data-bs-target="#files" type="button" role="tab">
-                        <i class="bi bi-files me-2"></i>File Conversion
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="url-tab" data-bs-toggle="tab" data-bs-target="#url" type="button" role="tab">
-                        <i class="bi bi-globe me-2"></i>URL to PDF
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="html-tab" data-bs-toggle="tab" data-bs-target="#html" type="button" role="tab">
-                        <i class="bi bi-code-slash me-2"></i>HTML to PDF
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="merge-tab" data-bs-toggle="tab" data-bs-target="#merge" type="button" role="tab">
-                        <i class="bi bi-collection me-2"></i>Merge PDFs
-                    </button>
-                </li>
-            </ul>
-
-            <div class="tab-content" id="converterTabsContent">
-                <!-- Files Tab -->
-                <div class="tab-pane fade show active" id="files" role="tabpanel">
-                    <div class="conversion-card p-4">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h3 class="mb-4"><i class="bi bi-file-earmark-pdf text-primary me-2"></i>Convert Files to PDF</h3>
-                                <p class="text-muted mb-4">Convert multiple files to PDF format. Supported: HTML, Images (PNG, JPG), DOCX</p>
-
-                                <form method="post" enctype="multipart/form-data" id="filesForm">
-                                    <div class="file-upload-area mb-4" id="fileUploadArea">
-                                        <i class="bi bi-cloud-arrow-up display-4 text-muted mb-3"></i>
-                                        <h5>Drag & Drop Files Here</h5>
-                                        <p class="text-muted">or click to browse</p>
-                                        <input type="file" class="form-control d-none" id="filesInput" name="ConversionRequest.Files" multiple
-                                               accept=".html,.htm,.png,.jpg,.jpeg,.docx">
-                                        <button type="button" class="btn btn-outline-primary mt-2" onclick="document.getElementById('filesInput').click()">
-                                            <i class="bi bi-folder2-open me-2"></i>Choose Files
-                                        </button>
-                                        <div id="fileList" class="mt-3"></div>
-                                    </div>
-
-                                    <!-- Redaction Section -->
-                                    <div class="card mb-4 redaction-card">
-                                        <div class="card-header">
-                                            <h6 class="mb-0">
-                                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#redactionSectionFiles">
-                                                    <i class="bi bi-eye-slash me-2"></i>PDF Redaction (Optional)
-                                                </button>
-                                            </h6>
-                                        </div>
-                                        <div class="collapse" id="redactionSectionFiles">
-                                            <div class="card-body">
-                                                <div class="form-check form-switch mb-3">
-                                                    <input class="form-check-input" type="checkbox" asp-for="EnableRedaction" id="EnableRedactionFiles">
-                                                    <label class="form-check-label" for="EnableRedactionFiles">
-                                                        Enable Text Redaction
-                                                    </label>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label for="RedactionText" class="form-label">Text to Redact</label>
-                                                    <textarea class="form-control" asp-for="RedactionText" rows="3"
-                                                              placeholder="Enter text or phrases to redact (separate with commas or new lines)&#10;Example:&#10;confidential, secret, 2024-01-15"></textarea>
-                                                    <small class="form-text text-muted">
-                                                        Separate multiple phrases with commas or new lines. The text will be blacked out in the PDF.
-                                                    </small>
-                                                </div>
-
-                                                <div class="form-check mb-3">
-                                                    <input class="form-check-input" type="checkbox" asp-for="RedactPartialWords" id="RedactPartialWordsFiles">
-                                                    <label class="form-check-label" for="RedactPartialWordsFiles">
-                                                        Redact partial word matches
-                                                    </label>
-                                                    <small class="form-text text-muted d-block">
-                                                        If checked, "secret" will also redact "secretly", "secrets", etc.
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary w-100" asp-page-handler="ConvertFiles">
-                                        <i class="bi bi-lightning-fill me-2"></i>Convert Files to PDF
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="ps-md-4">
-                                    <h5 class="mb-3">Supported Formats</h5>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="feature-icon">
-                                            <i class="bi bi-filetype-html"></i>
-                                        </div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-1">HTML Files</h6>
-                                            <small class="text-muted">.html, .htm</small>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="feature-icon">
-                                            <i class="bi bi-filetype-jpg"></i>
-                                        </div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-1">Images</h6>
-                                            <small class="text-muted">.png, .jpg, .jpeg</small>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="feature-icon">
-                                            <i class="bi bi-filetype-docx"></i>
-                                        </div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-1">Word Documents</h6>
-                                            <small class="text-muted">.docx</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- URL Tab -->
-                <div class="tab-pane fade" id="url" role="tabpanel">
-                    <div class="conversion-card p-4">
-                        <h3 class="mb-4"><i class="bi bi-globe text-primary me-2"></i>Convert URL to PDF</h3>
-                        <p class="text-muted mb-4">Convert any webpage to a PDF document by entering the URL</p>
-
-                        <form method="post">
-                            <div class="mb-4">
-                                <label for="urlInput" class="form-label fw-semibold">Website URL</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
-                                    <input type="url" class="form-control form-control-lg" id="urlInput" asp-for="ConversionRequest.Url"
-                                           placeholder="https://example.com" required>
-                                </div>
-                                <div class="form-text">Enter the full URL including https://</div>
-                            </div>
-
-                            <!-- Redaction Section -->
-                            <div class="card mb-4 redaction-card">
-                                <div class="card-header">
-                                    <h6 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#redactionSectionUrl">
-                                            <i class="bi bi-eye-slash me-2"></i>PDF Redaction (Optional)
-                                        </button>
-                                    </h6>
-                                </div>
-                                <div class="collapse" id="redactionSectionUrl">
-                                    <div class="card-body">
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" asp-for="EnableRedaction" id="EnableRedactionUrl">
-                                            <label class="form-check-label" for="EnableRedactionUrl">
-                                                Enable Text Redaction
-                                            </label>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="RedactionText" class="form-label">Text to Redact</label>
-                                            <textarea class="form-control" asp-for="RedactionText" rows="3"
-                                                      placeholder="Enter text or phrases to redact (separate with commas or new lines)&#10;Example:&#10;confidential, secret, 2024-01-15"></textarea>
-                                            <small class="form-text text-muted">
-                                                Separate multiple phrases with commas or new lines. The text will be blacked out in the PDF.
-                                            </small>
-                                        </div>
-
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input" type="checkbox" asp-for="RedactPartialWords" id="RedactPartialWordsUrl">
-                                            <label class="form-check-label" for="RedactPartialWordsUrl">
-                                                Redact partial word matches
-                                            </label>
-                                            <small class="form-text text-muted d-block">
-                                                If checked, "secret" will also redact "secretly", "secrets", etc.
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100" asp-page-handler="ConvertUrl">
-                                <i class="bi bi-download me-2"></i>Convert URL to PDF
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- HTML Tab -->
-                <div class="tab-pane fade" id="html" role="tabpanel">
-                    <div class="conversion-card p-4">
-                        <h3 class="mb-4"><i class="bi bi-code-slash text-primary me-2"></i>Convert HTML to PDF</h3>
-                        <p class="text-muted mb-4">Paste your HTML code and convert it to a PDF document</p>
-
-                        <form method="post">
-                            <div class="mb-4">
-                                <label for="htmlInput" class="form-label fw-semibold">HTML Content</label>
-                                <textarea class="form-control" id="htmlInput" asp-for="ConversionRequest.HtmlContent"
-                                          rows="12" placeholder="Enter your HTML content here...&#10;&#10;Example:&#10;&lt;h1&gt;My Document&lt;/h1&gt;&#10;&lt;p&gt;This is a sample document.&lt;/p&gt;"
-                                          required></textarea>
-                                <div class="form-text">Supports full HTML5, CSS, and JavaScript</div>
-                            </div>
-
-                            <!-- Redaction Section -->
-                            <div class="card mb-4 redaction-card">
-                                <div class="card-header">
-                                    <h6 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#redactionSectionHtml">
-                                            <i class="bi bi-eye-slash me-2"></i>PDF Redaction (Optional)
-                                        </button>
-                                    </h6>
-                                </div>
-                                <div class="collapse" id="redactionSectionHtml">
-                                    <div class="card-body">
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" asp-for="EnableRedaction" id="EnableRedactionHtml">
-                                            <label class="form-check-label" for="EnableRedactionHtml">
-                                                Enable Text Redaction
-                                            </label>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="RedactionText" class="form-label">Text to Redact</label>
-                                            <textarea class="form-control" asp-for="RedactionText" rows="3"
-                                                      placeholder="Enter text or phrases to redact (separate with commas or new lines)&#10;Example:&#10;confidential, secret, 2024-01-15"></textarea>
-                                            <small class="form-text text-muted">
-                                                Separate multiple phrases with commas or new lines. The text will be blacked out in the PDF.
-                                            </small>
-                                        </div>
-
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input" type="checkbox" asp-for="RedactPartialWords" id="RedactPartialWordsHtml">
-                                            <label class="form-check-label" for="RedactPartialWordsHtml">
-                                                Redact partial word matches
-                                            </label>
-                                            <small class="form-text text-muted d-block">
-                                                If checked, "secret" will also redact "secretly", "secrets", etc.
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100" asp-page-handler="ConvertHtml">
-                                <i class="bi bi-file-earmark-pdf me-2"></i>Convert HTML to PDF
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Merge Tab -->
-                <div class="tab-pane fade" id="merge" role="tabpanel">
-                    <div class="conversion-card p-4">
-                        <h3 class="mb-4"><i class="bi bi-collection text-primary me-2"></i>Merge PDF Files</h3>
-                        <p class="text-muted mb-4">Select multiple PDF files from your previous conversions and merge them into one document</p>
-
-                        <form method="post" id="mergeForm">
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Available PDF Files</label>
-                                <div class="file-list border rounded-3 p-3" style="max-height: 300px; overflow-y: auto;">
-                                    @if (Model.AvailableFiles.Any())
-                                    {
-                                        <div class="mb-2">
-                                            <small class="text-muted">Select at least 2 files to merge</small>
-                                        </div>
-                                        @foreach (var file in Model.AvailableFiles)
-                                        {
-                                            var fileDisplay = Model.GetFileDisplay(file);
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input file-checkbox" type="checkbox"
-                                                       name="MergeRequest.FilePaths" value="@file" id="file-@file">
-                                                <label class="form-check-label d-flex justify-content-between align-items-center" for="file-@file">
-                                                    <span class="text-truncate-multiline filename-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="@file">
-                                                        <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
-                                                        @file
-                                                    </span>
-                                                    <small class="text-muted flex-shrink-0 ms-2">@fileDisplay.FileSize</small>
-                                                </label>
-                                            </div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <div class="text-center py-4">
-                                            <i class="bi bi-inbox display-4 text-muted mb-3"></i>
-                                            <p class="text-muted">No PDF files available yet.</p>
-                                            <p class="text-muted">Convert some files first to see them here.</p>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-
-                            <!-- Redaction Section -->
-                            <div class="card mb-4 redaction-card">
-                                <div class="card-header">
-                                    <h6 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#redactionSectionMerge">
-                                            <i class="bi bi-eye-slash me-2"></i>PDF Redaction (Optional)
-                                        </button>
-                                    </h6>
-                                </div>
-                                <div class="collapse" id="redactionSectionMerge">
-                                    <div class="card-body">
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" asp-for="EnableRedaction" id="EnableRedactionMerge">
-                                            <label class="form-check-label" for="EnableRedactionMerge">
-                                                Enable Text Redaction
-                                            </label>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="RedactionText" class="form-label">Text to Redact</label>
-                                            <textarea class="form-control" asp-for="RedactionText" rows="3"
-                                                      placeholder="Enter text or phrases to redact (separate with commas or new lines)&#10;Example:&#10;confidential, secret, 2024-01-15"></textarea>
-                                            <small class="form-text text-muted">
-                                                Separate multiple phrases with commas or new lines. The text will be blacked out in the PDF.
-                                            </small>
-                                        </div>
-
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input" type="checkbox" asp-for="RedactPartialWords" id="RedactPartialWordsMerge">
-                                            <label class="form-check-label" for="RedactPartialWordsMerge">
-                                                Redact partial word matches
-                                            </label>
-                                            <small class="form-text text-muted d-block">
-                                                If checked, "secret" will also redact "secretly", "secrets", etc.
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100" asp-page-handler="MergePdfs"
-                                    id="mergeButton" disabled="@(!Model.AvailableFiles.Any())">
-                                <i class="bi bi-merge me-2"></i>Merge Selected PDFs
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Available Files Section -->
-            @if (Model.AvailableFiles.Any())
-            {
-                <div class="conversion-card p-4 mt-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0"><i class="bi bi-folder2-open text-primary me-2"></i>Your PDF Files</h4>
-                        <div>
-                            <!-- Redact Individual File Button -->
-                            <button class="btn btn-outline-danger btn-sm me-2" type="button" data-bs-toggle="modal" data-bs-target="#redactModal">
-                                <i class="bi bi-eye-slash me-1"></i>Redact PDF
-                            </button>
-                            <span class="status-badge bg-primary">@Model.AvailableFiles.Count files</span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        @foreach (var fileDisplay in Model.FileDisplays.Take(6))
-                        {
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="file-list-item p-3 h-100">
-                                    <div class="d-flex justify-content-between align-items-start h-100">
-                                        <div class="d-flex align-items-center w-100">
-                                            <i class="bi bi-file-earmark-pdf text-danger me-3 fs-4 flex-shrink-0"></i>
-                                            <div class="w-100 overflow-hidden">
-                                                <div class="text-truncate-multiline file-display-name filename-tooltip"
-                                                     data-bs-toggle="tooltip"
-                                                     data-bs-placement="top"
-                                                     title="@fileDisplay.FileName">
-                                                    @fileDisplay.FileName
-                                                </div>
-                                                <small class="text-muted d-block mt-1">@fileDisplay.FileSize • @fileDisplay.CreatedDate</small>
-                                            </div>
-                                        </div>
-                                        <div class="flex-shrink-0 ms-2">
-                                            <a href="@Url.Page("", "DownloadFile", new { fileName = fileDisplay.FileName })"
-                                               class="btn btn-sm btn-outline-primary" title="Download">
-                                                <i class="bi bi-download"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    @if (Model.AvailableFiles.Count > 6)
-                    {
-                        <div class="text-center mt-3">
-                            <small class="text-muted">and @(Model.AvailableFiles.Count - 6) more files...</small>
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-
-        <!-- Redact Modal -->
-        <div class="modal fade" id="redactModal" tabindex="-1" aria-labelledby="redactModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="redactModalLabel">
-                            <i class="bi bi-eye-slash text-danger me-2"></i>Redact PDF File
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form method="post" asp-page-handler="RedactPdf">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="selectedFile" class="form-label">Select PDF to Redact</label>
-                                <select class="form-select" id="selectedFile" name="fileName" required>
-                                    <option value="">Choose a file...</option>
-                                    @foreach (var file in Model.AvailableFiles)
-                                    {
-                                        <option value="@file">@file</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="modalRedactionText" class="form-label">Text to Redact</label>
-                                <textarea class="form-control" id="modalRedactionText" name="RedactionText" rows="3"
-                                          placeholder="Enter text or phrases to redact (separate with commas or new lines)" required></textarea>
-                                <small class="form-text text-muted">
-                                    Separate multiple phrases with commas or new lines.
-                                </small>
-                            </div>
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="modalRedactPartialWords" name="RedactPartialWords">
-                                <label class="form-check-label" for="modalRedactPartialWords">
-                                    Redact partial word matches
-                                </label>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-eye-slash me-2"></i>Redact PDF
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="text-center mt-5">
-            <p class="text-white-50">PDF Converter  &copy; - Powered by IronPDF</p>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:#4F46E5;">31</div>
+            <div class="text-muted" style="font-size:12px;">API Endpoints</div>
         </div>
     </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:#059669;">7</div>
+            <div class="text-muted" style="font-size:12px;">Templates</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:#D97706;">@Model.OutputFileCount</div>
+            <div class="text-muted" style="font-size:12px;">Generated Files</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center p-3 border-0 shadow-sm">
+            <div style="font-size:28px;font-weight:800;color:@(Model.IsLicensed ? "#059669" : "#DC2626");">
+                @(Model.IsLicensed ? "✓" : "Trial")
+            </div>
+            <div class="text-muted" style="font-size:12px;">License Status</div>
+        </div>
+    </div>
+</div>
 
-    <!-- Bootstrap & JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // File upload area functionality
-            const fileUploadArea = document.getElementById('fileUploadArea');
-            const filesInput = document.getElementById('filesInput');
-            const fileList = document.getElementById('fileList');
-
-            // Drag and drop functionality
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, highlight, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, unhighlight, false);
-            });
-
-            function highlight() {
-                fileUploadArea.classList.add('dragover');
-            }
-
-            function unhighlight() {
-                fileUploadArea.classList.remove('dragover');
-            }
-
-            fileUploadArea.addEventListener('drop', handleDrop, false);
-
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                handleFiles(files);
-            }
-
-            filesInput.addEventListener('change', function() {
-                handleFiles(this.files);
-            });
-
-            function handleFiles(files) {
-                fileList.innerHTML = '';
-                if (files.length > 0) {
-                    const fileCount = document.createElement('div');
-                    fileCount.className = 'alert alert-info';
-                    fileCount.innerHTML = `<i class="bi bi-info-circle me-2"></i>Selected ${files.length} file(s) for conversion`;
-                    fileList.appendChild(fileCount);
-
-                    // Update the upload area text
-                    fileUploadArea.querySelector('h5').textContent = `${files.length} file(s) selected`;
-                    fileUploadArea.querySelector('p').textContent = 'Ready for conversion';
-                }
-            }
-
-            // Merge button functionality
-            const checkboxes = document.querySelectorAll('.file-checkbox');
-            const mergeButton = document.getElementById('mergeButton');
-
-            function updateMergeButton() {
-                const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-                mergeButton.disabled = selectedCount < 2;
-
-                if (selectedCount >= 2) {
-                    mergeButton.innerHTML = `<i class="bi bi-merge me-2"></i>Merge ${selectedCount} PDFs`;
-                    mergeButton.title = `Merge ${selectedCount} PDF files`;
-                } else {
-                    mergeButton.innerHTML = `<i class="bi bi-merge me-2"></i>Merge Selected PDFs`;
-                    mergeButton.title = 'Select at least 2 PDF files to merge';
-                }
-            }
-
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateMergeButton);
-            });
-
-            updateMergeButton(); // Initial check
-
-            // Auto-hide alerts after 5 seconds
-            setTimeout(() => {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
-
-            // Persist redaction settings across tabs
-            function persistRedactionSettings() {
-                const redactionCheckboxes = document.querySelectorAll('input[type="checkbox"][id^="EnableRedaction"]');
-                const textAreas = document.querySelectorAll('textarea[name="RedactionText"]');
-                const partialCheckboxes = document.querySelectorAll('input[type="checkbox"][id^="RedactPartialWords"]');
-
-                // Sync all EnableRedaction checkboxes
-                redactionCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        redactionCheckboxes.forEach(other => {
-                            other.checked = this.checked;
-                        });
-                    });
-                });
-
-                // Sync all RedactionText textareas
-                textAreas.forEach(textarea => {
-                    textarea.addEventListener('input', function() {
-                        textAreas.forEach(other => {
-                            if (other !== this) {
-                                other.value = this.value;
-                            }
-                        });
-                    });
-                });
-
-                // Sync all RedactPartialWords checkboxes
-                partialCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        partialCheckboxes.forEach(other => {
-                            other.checked = this.checked;
-                        });
-                    });
-                });
-            }
-
-            persistRedactionSettings();
-
-            // Initialize Bootstrap tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        });
-    </script>
-</body>
-</html>
+<h5 class="section-header">Feature Showcase</h5>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a href="/Conversion" class="feature-card">
+            <div class="icon"><i class="bi bi-arrow-left-right"></i></div>
+            <h3>Conversion</h3>
+            <p>Convert HTML, URLs, images, and DOCX files to PDF with full rendering control.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Templates" class="feature-card">
+            <div class="icon"><i class="bi bi-grid-3x3-gap"></i></div>
+            <h3>Templates</h3>
+            <p>Generate PDFs from 7 professional templates: Invoice, Report, Dashboard, Certificate, Resume, Brochure, Form.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Manipulation" class="feature-card">
+            <div class="icon"><i class="bi bi-scissors"></i></div>
+            <h3>Manipulation</h3>
+            <p>Merge, split, rotate, compress, and redact PDFs.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Annotations" class="feature-card">
+            <div class="icon"><i class="bi bi-pencil-square"></i></div>
+            <h3>Annotations</h3>
+            <p>Add headers, footers, text/image watermarks, sticky-note annotations, and bookmarks.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Security" class="feature-card">
+            <div class="icon"><i class="bi bi-shield-lock"></i></div>
+            <h3>Security</h3>
+            <p>Password protect, digitally sign with PFX certificates, and verify signatures.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Forms" class="feature-card">
+            <div class="icon"><i class="bi bi-ui-checks"></i></div>
+            <h3>PDF Forms</h3>
+            <p>Create fillable AcroForms from HTML, inspect fields, fill values, and flatten forms.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Metadata" class="feature-card">
+            <div class="icon"><i class="bi bi-info-circle"></i></div>
+            <h3>Metadata</h3>
+            <p>Read and write PDF metadata (title, author, keywords) and convert to PDF/A.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Batch" class="feature-card">
+            <div class="icon"><i class="bi bi-collection"></i></div>
+            <h3>Batch + SignalR</h3>
+            <p>Process multiple files in parallel with real-time progress via SignalR WebSockets.</p>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/swagger" target="_blank" class="feature-card">
+            <div class="icon"><i class="bi bi-code-slash"></i></div>
+            <h3>Swagger API</h3>
+            <p>Explore and test all 31 API endpoints with full interactive documentation.</p>
+        </a>
+    </div>
+</div>

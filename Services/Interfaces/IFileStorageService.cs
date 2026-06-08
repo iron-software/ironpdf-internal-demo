@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+namespace IronPdfDemo.Services.Interfaces;
 
-namespace IronPdfConverter.Services.Interfaces
+public interface IFileStorageService
 {
-    public interface IFileStorageService
-    {
-        Task<string> SaveFileAsync(IFormFile file, string subDirectory = "");
-        string GetOutputDirectory();
-        string GenerateUniqueFileName(string extension);
-        string GenerateUniqueFileName(string originalFileName, string extension = ".pdf");
-        void EnsureOutputDirectoryExists();
-        void CleanTempFiles();
-    }
+    string GetOutputDirectory();
+    string GetTempDirectory();
+    Task<string> SaveFileAsync(byte[] data, string baseName, string suffix = "");
+    string GenerateUniqueFileName(string baseName, string suffix = "");
+    void EnsureDirectoriesExist();
+    IEnumerable<FileInfo> ListOutputFiles();
+    void CleanOldFiles(int retainDays);
+    string GetDownloadUrl(string fileName);
 }

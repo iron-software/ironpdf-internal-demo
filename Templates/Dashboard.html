@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>{{DASHBOARD_TITLE}}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0F172A; color: #E2E8F0; padding: 24px; }
+  h1 { font-size: 22px; font-weight: 700; color: #F8FAFC; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #94A3B8; margin-bottom: 24px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: #1E293B; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+  .kpi-label { font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-value { font-size: 28px; font-weight: 700; margin: 6px 0 4px; }
+  .kpi-delta { font-size: 12px; }
+  .kpi-delta.up { color: #34D399; }
+  .kpi-delta.down { color: #F87171; }
+  .kpi-0 { border-top: 3px solid #3B82F6; } .kpi-0 .kpi-value { color: #60A5FA; }
+  .kpi-1 { border-top: 3px solid #10B981; } .kpi-1 .kpi-value { color: #34D399; }
+  .kpi-2 { border-top: 3px solid #F59E0B; } .kpi-2 .kpi-value { color: #FBBF24; }
+  .kpi-3 { border-top: 3px solid #8B5CF6; } .kpi-3 .kpi-value { color: #A78BFA; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .card { background: #1E293B; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+  .card-title { font-size: 13px; font-weight: 700; color: #CBD5E1; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+  canvas { width: 100% !important; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 8px 10px; color: #64748B; font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #334155; }
+  td { padding: 10px 10px; border-bottom: 1px solid #1E293B; color: #CBD5E1; }
+  tr:hover td { background: #273349; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+  .badge-green { background: rgba(52,211,153,0.15); color: #34D399; }
+  .badge-red { background: rgba(248,113,113,0.15); color: #F87171; }
+  .badge-yellow { background: rgba(251,191,36,0.15); color: #FBBF24; }
+</style>
+</head>
+<body>
+<h1>{{DASHBOARD_TITLE}}</h1>
+<div class="subtitle">Real-time Analytics Dashboard · Generated {{GENERATED_DATE}}</div>
+
+<div class="kpi-row">
+  <div class="kpi kpi-0">
+    <div class="kpi-label">Total Revenue</div>
+    <div class="kpi-value" id="rev">$0</div>
+    <div class="kpi-delta up" id="rev-delta">▲ +18.4%</div>
+  </div>
+  <div class="kpi kpi-1">
+    <div class="kpi-label">Active Users</div>
+    <div class="kpi-value" id="users">0</div>
+    <div class="kpi-delta up" id="users-delta">▲ +1,243</div>
+  </div>
+  <div class="kpi kpi-2">
+    <div class="kpi-label">Conversion Rate</div>
+    <div class="kpi-value" id="conv">0%</div>
+    <div class="kpi-delta up" id="conv-delta">▲ +2.1pp</div>
+  </div>
+  <div class="kpi kpi-3">
+    <div class="kpi-label">Avg Order Value</div>
+    <div class="kpi-value" id="aov">$0</div>
+    <div class="kpi-delta down" id="aov-delta">▼ -$3.50</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Monthly Revenue (Last 6 Months)</div>
+    <canvas id="barChart" height="180"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Revenue by Channel</div>
+    <canvas id="donutChart" height="180"></canvas>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Top Products</div>
+  <table>
+    <thead>
+      <tr><th>Product</th><th>Units Sold</th><th>Revenue</th><th>Growth</th><th>Status</th></tr>
+    </thead>
+    <tbody id="productTable"></tbody>
+  </table>
+</div>
+
+<script>
+const products = [
+  { name: "Enterprise Suite Pro", units: 1842, revenue: "$924,000", growth: "+24%", status: "green" },
+  { name: "Analytics Dashboard", units: 3241, revenue: "$648,200", growth: "+18%", status: "green" },
+  { name: "API Gateway Plus", units: 987, revenue: "$493,500", growth: "+9%", status: "yellow" },
+  { name: "Cloud Storage 1TB", units: 5120, revenue: "$358,400", growth: "+31%", status: "green" },
+  { name: "Legacy Connector", units: 234, revenue: "$117,000", growth: "-12%", status: "red" }
+];
+
+const statusMap = { green: "badge-green", red: "badge-red", yellow: "badge-yellow" };
+const statusLabel = { green: "Growing", red: "Declining", yellow: "Stable" };
+
+document.addEventListener("DOMContentLoaded", function () {
+  function countUp(el, target, prefix = "", suffix = "", duration = 1200) {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start = Math.min(start + step, target);
+      el.textContent = prefix + Math.round(start).toLocaleString() + suffix;
+      if (start >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  countUp(document.getElementById("rev"), 4850000, "$", "");
+  countUp(document.getElementById("users"), 24781);
+  countUp(document.getElementById("conv"), 7, "", "%");
+  countUp(document.getElementById("aov"), 247, "$");
+
+  const tbody = document.getElementById("productTable");
+  products.forEach(p => {
+    tbody.innerHTML += `<tr><td>${p.name}</td><td>${p.units.toLocaleString()}</td><td>${p.revenue}</td><td class="kpi-delta ${p.status === 'green' ? 'up' : 'down'}">${p.growth}</td><td><span class="badge ${statusMap[p.status]}">${statusLabel[p.status]}</span></td></tr>`;
+  });
+
+  // Bar chart
+  const bc = document.getElementById("barChart");
+  const bctx = bc.getContext("2d");
+  bc.width = bc.offsetWidth; bc.height = 180;
+  const months = ["Jan","Feb","Mar","Apr","May","Jun"];
+  const vals = [680, 720, 810, 760, 890, 950];
+  const maxV = 1000;
+  const pw = bc.width / months.length;
+  bctx.fillStyle = "#0F172A";
+  bctx.fillRect(0,0,bc.width,bc.height);
+  months.forEach((m, i) => {
+    const bh = (vals[i] / maxV) * 140;
+    const x = i * pw + pw * 0.2;
+    const w = pw * 0.6;
+    const grad = bctx.createLinearGradient(0, bc.height - bh - 20, 0, bc.height - 20);
+    grad.addColorStop(0, "#3B82F6");
+    grad.addColorStop(1, "#1D4ED8");
+    bctx.fillStyle = grad;
+    bctx.fillRect(x, bc.height - bh - 20, w, bh);
+    bctx.fillStyle = "#64748B";
+    bctx.font = "10px Arial";
+    bctx.textAlign = "center";
+    bctx.fillText(m, x + w/2, bc.height - 4);
+    bctx.fillStyle = "#93C5FD";
+    bctx.fillText("$"+(vals[i]*1000/1000).toFixed(0)+"K", x + w/2, bc.height - bh - 24);
+  });
+
+  // Donut chart
+  const dc = document.getElementById("donutChart");
+  const dctx = dc.getContext("2d");
+  dc.width = dc.offsetWidth; dc.height = 180;
+  const slices = [{ v: 45, c: "#3B82F6", l: "Direct" }, { v: 30, c: "#10B981", l: "Organic" }, { v: 15, c: "#F59E0B", l: "Paid" }, { v: 10, c: "#8B5CF6", l: "Referral" }];
+  let angle = -Math.PI / 2;
+  const cx = dc.width / 2, cy = dc.height / 2, r = 65, ir = 40;
+  slices.forEach(s => {
+    const arc = (s.v / 100) * Math.PI * 2;
+    dctx.beginPath();
+    dctx.moveTo(cx, cy);
+    dctx.arc(cx, cy, r, angle, angle + arc);
+    dctx.closePath();
+    dctx.fillStyle = s.c;
+    dctx.fill();
+    angle += arc;
+  });
+  dctx.beginPath();
+  dctx.arc(cx, cy, ir, 0, Math.PI * 2);
+  dctx.fillStyle = "#1E293B";
+  dctx.fill();
+  dctx.fillStyle = "#F8FAFC";
+  dctx.font = "bold 16px Arial";
+  dctx.textAlign = "center";
+  dctx.fillText("$4.85M", cx, cy - 4);
+  dctx.font = "10px Arial";
+  dctx.fillStyle = "#94A3B8";
+  dctx.fillText("Revenue", cx, cy + 12);
+});
+</script>
+</body>
+</html>

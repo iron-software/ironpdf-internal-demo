@@ -1,0 +1,168 @@
+@page
+@model MetadataModel
+@{
+    ViewData["Title"] = "Metadata & PDF/A";
+    ViewData["ActivePage"] = "Metadata";
+}
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link active" href="#getmeta" data-bs-toggle="tab">Get Metadata</a></li>
+    <li class="nav-item"><a class="nav-link" href="#setmeta" data-bs-toggle="tab">Set Metadata</a></li>
+    <li class="nav-item"><a class="nav-link" href="#pdfa" data-bs-toggle="tab">PDF/A Compliance</a></li>
+</ul>
+
+<div class="tab-content">
+    <!-- Get Metadata -->
+    <div class="tab-pane fade show active" id="getmeta">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Read PDF Metadata</h5>
+            <form id="getMetaForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="getMetaZone">
+                    <i class="bi bi-file-pdf"></i><p>Select a PDF to inspect</p>
+                    <input type="file" name="File" id="getMetaInput" accept=".pdf" class="d-none"/>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-info-circle me-1"></i>Read Metadata</button>
+            </form>
+            <div id="getMetaResult" class="mt-3" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- Set Metadata -->
+    <div class="tab-pane fade" id="setmeta">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Update PDF Metadata</h5>
+            <form id="setMetaForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="setMetaZone">
+                    <i class="bi bi-file-pdf"></i><p>Select a PDF</p>
+                    <input type="file" name="File" id="setMetaInput" accept=".pdf" class="d-none"/>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Title</label>
+                        <input type="text" name="Title" class="form-control" placeholder="Document title"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Author</label>
+                        <input type="text" name="Author" class="form-control" placeholder="Author name"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Subject</label>
+                        <input type="text" name="Subject" class="form-control" placeholder="Document subject"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Keywords</label>
+                        <input type="text" name="Keywords" class="form-control" placeholder="comma, separated, keywords"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Creator Application</label>
+                        <input type="text" name="Creator" class="form-control" placeholder="e.g. IronPDF Demo"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Producer</label>
+                        <input type="text" name="Producer" class="form-control" placeholder="e.g. IronPDF 2026.5.2"/>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Update Metadata</button>
+            </form>
+            <div id="setMetaResult" style="display:none;"></div>
+        </div></div>
+    </div>
+
+    <!-- PDF/A -->
+    <div class="tab-pane fade" id="pdfa">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5 class="section-header">Convert to PDF/A</h5>
+            <p class="text-muted small">
+                PDF/A is an ISO-standardized archival format that ensures long-term reproducibility.
+                <strong>PDF/A-1b</strong> guarantees visual appearance; <strong>PDF/A-3b</strong> adds embedded file attachment support.
+            </p>
+            <form id="pdfaForm" enctype="multipart/form-data">
+                <div class="upload-zone mb-3" id="pdfaZone">
+                    <i class="bi bi-file-pdf"></i><p>Select a PDF to convert</p>
+                    <input type="file" name="File" id="pdfaInput" accept=".pdf" class="d-none"/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">PDF/A Version</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="PdfAVersion" id="pdfa1b" value="PdfA1B" checked/>
+                            <label class="form-check-label" for="pdfa1b">
+                                <strong>PDF/A-1b</strong> — Basic visual compliance (ISO 19005-1)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="PdfAVersion" id="pdfa3b" value="PdfA3B"/>
+                            <label class="form-check-label" for="pdfa3b">
+                                <strong>PDF/A-3b</strong> — Embedded files support (ISO 19005-3)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-archive me-1"></i>Convert to PDF/A</button>
+            </form>
+            <div id="pdfaResult" style="display:none;"></div>
+        </div></div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+['getMetaZone getMetaInput .pdf','setMetaZone setMetaInput .pdf','pdfaZone pdfaInput .pdf'].forEach(s => {
+    const [z,i,a] = s.split(' ');
+    initDragDrop(z, i, a);
+});
+
+document.getElementById('getMetaForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Reading...';
+    try {
+        const res = await fetch('/api/metadata/get', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        const container = document.getElementById('getMetaResult');
+        if (res.ok) {
+            const fields = [
+                ['Title', data.title], ['Author', data.author], ['Subject', data.subject],
+                ['Keywords', data.keywords], ['Creator', data.creator], ['Producer', data.producer],
+                ['Creation Date', data.creationDate], ['Modified Date', data.modifiedDate]
+            ];
+            container.innerHTML = `<table class="table table-sm table-bordered"><tbody>
+                ${fields.map(([k,v]) => `<tr><th style="width:160px;">${k}</th><td>${v ?? '<em class="text-muted">—</em>'}</td></tr>`).join('')}
+            </tbody></table>`;
+            container.style.display = 'block';
+            showToast('Metadata loaded', 'success');
+        } else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+document.getElementById('setMetaForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Updating...';
+    try {
+        const res = await fetch('/api/metadata/set', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'setMetaResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+
+document.getElementById('pdfaForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true; const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Converting...';
+    try {
+        const res = await fetch('/api/metadata/pdfa', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if (res.ok) renderResult(data, 'pdfaResult');
+        else showToast(data.error || 'Failed', 'error');
+    } catch(er) { showToast(er.message, 'error'); }
+    btn.disabled = false; btn.innerHTML = orig;
+});
+</script>
+}

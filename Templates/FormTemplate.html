@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>IronPDF Fillable Form</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F3F4F6; padding: 32px; }
+  .form-card { background: #fff; border-radius: 16px; padding: 36px; max-width: 700px; margin: 0 auto; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+  .form-header { border-bottom: 2px solid #4F46E5; padding-bottom: 16px; margin-bottom: 28px; }
+  .form-header h1 { font-size: 22px; font-weight: 700; color: #1F2937; }
+  .form-header p { font-size: 12px; color: #6B7280; margin-top: 4px; }
+  .form-section { margin-bottom: 24px; }
+  .form-section h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #4F46E5; margin-bottom: 14px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+  .field-row.full { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; }
+  label { font-size: 11px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  input[type="text"], input[type="email"], input[type="date"], select, textarea {
+    border: 1.5px solid #D1D5DB; border-radius: 8px; padding: 8px 12px;
+    font-size: 13px; color: #1F2937; background: #FAFAFA;
+    width: 100%; outline: none;
+  }
+  textarea { height: 80px; resize: vertical; }
+  .radio-group, .checkbox-group { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+  .radio-item, .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #374151; }
+  input[type="radio"], input[type="checkbox"] { width: 16px; height: 16px; }
+  .rating-row { display: flex; gap: 12px; }
+  .rating-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: #6B7280; }
+  .rating-item input { width: 16px; height: 16px; }
+  .submit-area { background: #F9FAFB; border-radius: 8px; padding: 16px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .hint { font-size: 11px; color: #9CA3AF; }
+  input[type="submit"] { background: #4F46E5; color: #fff; border: none; padding: 10px 28px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="form-card">
+  <div class="form-header">
+    <h1>Customer Onboarding Form</h1>
+    <p>Please complete all sections. Fields marked * are required. This form will be processed within 2 business days.</p>
+  </div>
+
+  <form>
+    <div class="form-section">
+      <h3>Personal Information</h3>
+      <div class="field-row">
+        <div class="field">
+          <label for="firstname">First Name *</label>
+          <input type="text" name="firstname" id="firstname" value=""/>
+        </div>
+        <div class="field">
+          <label for="lastname">Last Name *</label>
+          <input type="text" name="lastname" id="lastname" value=""/>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="email">Email Address *</label>
+          <input type="text" name="email" id="email" value=""/>
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <input type="text" name="phone" id="phone" value=""/>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="dob">Date of Birth</label>
+          <input type="text" name="dob" id="dob" value=""/>
+        </div>
+        <div class="field">
+          <label for="country">Country *</label>
+          <select name="country" id="country">
+            <option value="">Select country...</option>
+            <option value="us">United States</option>
+            <option value="uk">United Kingdom</option>
+            <option value="ca">Canada</option>
+            <option value="au">Australia</option>
+            <option value="de">Germany</option>
+            <option value="fr">France</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Account Details</h3>
+      <div class="field-row">
+        <div class="field">
+          <label for="plan">Subscription Plan *</label>
+          <select name="plan" id="plan">
+            <option value="">Choose a plan...</option>
+            <option value="starter">Starter — $49/mo</option>
+            <option value="pro">Professional — $149/mo</option>
+            <option value="enterprise">Enterprise — Custom</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="department">Department</label>
+          <select name="department" id="department">
+            <option value="">Select...</option>
+            <option value="engineering">Engineering</option>
+            <option value="product">Product</option>
+            <option value="sales">Sales</option>
+            <option value="marketing">Marketing</option>
+            <option value="finance">Finance</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row full">
+        <div class="field">
+          <label>Gender</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gender" value="male"/> Male</label>
+            <label class="radio-item"><input type="radio" name="gender" value="female"/> Female</label>
+            <label class="radio-item"><input type="radio" name="gender" value="other"/> Other</label>
+            <label class="radio-item"><input type="radio" name="gender" value="prefer_not"/> Prefer not to say</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Preferences &amp; Feedback</h3>
+      <div class="field-row full">
+        <div class="field">
+          <label>Features of Interest</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="feature_html" value="html_to_pdf"/> HTML to PDF</label>
+            <label class="checkbox-item"><input type="checkbox" name="feature_forms" value="forms"/> PDF Forms</label>
+            <label class="checkbox-item"><input type="checkbox" name="feature_security" value="security"/> Security &amp; Signing</label>
+            <label class="checkbox-item"><input type="checkbox" name="feature_batch" value="batch"/> Batch Processing</label>
+          </div>
+        </div>
+      </div>
+      <div class="field-row full">
+        <div class="field">
+          <label>Satisfaction Rating (1–5)</label>
+          <div class="rating-row">
+            <div class="rating-item"><input type="radio" name="rating" value="1"/><span>1 ★</span></div>
+            <div class="rating-item"><input type="radio" name="rating" value="2"/><span>2 ★</span></div>
+            <div class="rating-item"><input type="radio" name="rating" value="3"/><span>3 ★</span></div>
+            <div class="rating-item"><input type="radio" name="rating" value="4"/><span>4 ★</span></div>
+            <div class="rating-item"><input type="radio" name="rating" value="5"/><span>5 ★</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="field-row full">
+        <div class="field">
+          <label for="comments">Comments / Special Requirements</label>
+          <textarea name="comments" id="comments"></textarea>
+        </div>
+      </div>
+      <div class="field-row full">
+        <div class="field">
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="terms" value="agreed"/> I agree to the Terms of Service and Privacy Policy *</label>
+          </div>
+          <div class="checkbox-group" style="margin-top:8px;">
+            <label class="checkbox-item"><input type="checkbox" name="newsletter" value="subscribed"/> Subscribe to product updates and newsletters</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <div class="hint">All data is encrypted and stored securely.</div>
+      <input type="submit" name="submit" value="Submit Application"/>
+    </div>
+  </form>
+</div>
+</body>
+</html>
